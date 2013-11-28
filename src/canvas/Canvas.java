@@ -9,12 +9,20 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 /**
@@ -24,6 +32,21 @@ import javax.swing.SwingUtilities;
 public class Canvas extends JPanel {
     // image where the user's drawing is stored
     private Image drawingBuffer;
+    private JToggleButton eraser;
+    private JToggleButton accessPalette;
+    private JColorChooser palette;
+    
+    private JMenuBar eraseMenuBar;
+    private JMenu eraseMenu;
+    private JMenuItem eraseItemSmall;
+    private JMenuItem eraseItemMedium;
+    private JMenuItem eraseItemLarge;
+    
+    private final int SMALL = 10;
+    private final int MEDIUM = 25;
+    private final int LARGE = 50;
+    
+    private int eraserSize = MEDIUM;
     
     
     /**
@@ -34,9 +57,73 @@ public class Canvas extends JPanel {
     public Canvas(int width, int height) {
         this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
+        eraser = new JToggleButton("Eraser");
+        accessPalette = new JToggleButton("Choose Color");
+        palette = new JColorChooser();
+        palette.setColor(Color.BLACK);
+        this.add(eraser);
+        this.add(accessPalette);
+        
+        //ERASER MENU TESTING
+        eraseMenuBar = new JMenuBar();
+        eraseMenu = new JMenu("Erase Menu");
+        eraseMenuBar.add(eraseMenu);
+        
+        eraseItemSmall = new JMenuItem("Small");
+        eraseItemMedium = new JMenuItem("Medium");
+        eraseItemLarge = new JMenuItem("Large");
+        eraseMenu.add(eraseItemSmall);
+        eraseMenu.add(eraseItemMedium);
+        eraseMenu.add(eraseItemLarge);
+        
+        this.add(eraseMenuBar);
+        
+        
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
         // wait until paintComponent() is first called.
+        
+        
+    	accessPalette.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			togglePalette();
+    		}
+    	});
+    	
+    	eraseItemSmall.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			eraserSize = SMALL;
+    			eraseMenu.setText(eraseItemSmall.getText());
+    		}
+    	});
+    	
+    	eraseItemMedium.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			eraserSize = MEDIUM;
+    			eraseMenu.setText(eraseItemMedium.getText());
+    		}
+    	});
+    	
+    	eraseItemLarge.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			eraserSize = LARGE;
+    			eraseMenu.setText(eraseItemLarge.getText());
+    		}
+    	});
+    	
+    }
+    
+    public void togglePalette() {
+    	
+    	if (accessPalette.isSelected()) {
+    		this.add(palette);
+    	}
+    	else{
+    		this.remove(palette);
+    	}
+    	
+    	this.revalidate();
+    	this.repaint();
     }
     
     /**
@@ -117,7 +204,25 @@ public class Canvas extends JPanel {
     private void drawLineSegment(int x1, int y1, int x2, int y2) {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
-        g.setColor(Color.BLACK);
+        Color color = palette.getColor();
+        g.setColor(color);
+        int drawWidth = 5;
+        g.setStroke(new BasicStroke(drawWidth));
+        g.drawLine(x1, y1, x2, y2);
+        
+        // IMPORTANT!  every time we draw on the internal drawing buffer, we
+        // have to notify Swing to repaint this component on the screen.
+        this.repaint();
+    }
+    
+    /*
+     * ERASER
+     */
+    private void erase(int x1, int y1, int x2, int y2) {
+        Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
+        
+        g.setColor(Color.WHITE);
+        g.setStroke(new BasicStroke(eraserSize));
         g.drawLine(x1, y1, x2, y2);
         
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
@@ -157,7 +262,12 @@ public class Canvas extends JPanel {
         public void mouseDragged(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
-            drawLineSegment(lastX, lastY, x, y);
+            if (eraser.isSelected()){
+            	erase(lastX, lastY, x, y);
+            }
+            else{
+            	drawLineSegment(lastX, lastY, x, y);
+            }
             lastX = x;
             lastY = y;
         }
