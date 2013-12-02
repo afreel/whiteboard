@@ -15,7 +15,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -41,6 +46,9 @@ public class Canvas extends JPanel {
     private JMenuItem eraseItemSmall;
     private JMenuItem eraseItemMedium;
     private JMenuItem eraseItemLarge;
+    
+    private JButton bmp;
+    private JButton revert;
     
     private final int SMALL = 10;
     private final int MEDIUM = 25;
@@ -78,6 +86,11 @@ public class Canvas extends JPanel {
         
         this.add(eraseMenuBar);
         
+        bmp = new JButton("BMP");
+        this.add(bmp);
+        
+        revert = new JButton("Revert");
+        this.add(revert);
         
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
@@ -111,6 +124,42 @@ public class Canvas extends JPanel {
     		}
     	});
     	
+    	bmp.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			saveBMP();
+    		}
+    	});
+    	
+    	revert.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			revertToLastBMP();
+    		}
+    	});
+    	
+    }
+    
+    public void revertToLastBMP() {
+    	try {
+			drawingBuffer = ImageIO.read(new File("c:\\CanvasImage.BMP"));
+			this.repaint();
+			System.out.println("reverted");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("could not revert");
+		}
+    }
+    
+    public void saveBMP() {
+    	BufferedImage bi = (BufferedImage) drawingBuffer;
+    	try {
+			ImageIO.write(bi, "BMP", new File("c:\\CanvasImage.BMP"));
+			System.out.println("saved");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("not saved");
+		}
     }
     
     public void togglePalette() {
