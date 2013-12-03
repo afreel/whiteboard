@@ -13,8 +13,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 /**
@@ -24,15 +26,16 @@ import javax.swing.SwingUtilities;
 public class Canvas extends JPanel {
     // image where the user's drawing is stored
     private Image drawingBuffer;
-    
+    private JToggleButton eraseToggle;
     
     /**
      * Make a canvas.
      * @param width width in pixels
      * @param height height in pixels
      */
-    public Canvas(int width, int height) {
+    public Canvas(int width, int height, JToggleButton eraseToggle) {
         this.setPreferredSize(new Dimension(width, height));
+        this.eraseToggle = eraseToggle;
         addDrawingController();
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
@@ -116,13 +119,20 @@ public class Canvas extends JPanel {
      */
     private void drawLineSegment(int x1, int y1, int x2, int y2) {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-        
         g.setColor(Color.BLACK);
         g.drawLine(x1, y1, x2, y2);
         
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
         // have to notify Swing to repaint this component on the screen.
         this.repaint();
+    }
+    
+    private void erase(int x1, int y1, int x2, int y2) {
+    	Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
+    	g.setColor(Color.WHITE);
+    	g.setStroke(new BasicStroke(20));
+    	g.drawLine(x1, y1, x2, y2);
+    	this.repaint();
     }
     
     /*
@@ -146,7 +156,8 @@ public class Canvas extends JPanel {
          * When mouse button is pressed down, start drawing.
          */
         public void mousePressed(MouseEvent e) {
-            lastX = e.getX();
+            System.out.println(e.paramString());
+        	lastX = e.getX();
             lastY = e.getY();
         }
 
@@ -157,7 +168,12 @@ public class Canvas extends JPanel {
         public void mouseDragged(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
-            drawLineSegment(lastX, lastY, x, y);
+            if (eraseToggle.isSelected()) {
+            	erase(lastX, lastY, x, y);
+            }
+            else {
+            	drawLineSegment(lastX, lastY, x, y);
+            }
             lastX = x;
             lastY = y;
         }
@@ -170,10 +186,10 @@ public class Canvas extends JPanel {
         public void mouseExited(MouseEvent e) { }
     }
     
-    
     /*
      * Main program. Make a window containing a Canvas.
      */
+    
     public static void main(String[] args) {
         // set up the UI (on the event-handling thread)
         SwingUtilities.invokeLater(new Runnable() {
@@ -181,8 +197,16 @@ public class Canvas extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-                Canvas canvas = new Canvas(800, 600);
+               
+                EraseButton eraseToggle = new EraseButton();
+                eraseToggle.setName("eraseToggle");
+                
+                Canvas canvas = new Canvas(800, 600, eraseToggle);
+                canvas.setLayout(new BorderLayout());
+                
+                ButtonBar buttonBar = new ButtonBar(eraseToggle);
                 window.add(canvas, BorderLayout.CENTER);
+                window.add(buttonBar, BorderLayout.EAST);
                 window.pack();
                 window.setVisible(true);
             }
