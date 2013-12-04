@@ -1,4 +1,4 @@
-package canvas;
+package client;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -33,7 +33,7 @@ import javax.swing.SwingUtilities;
  * Canvas represents a drawing surface that allows the user to draw
  * on it freehand, with the mouse.
  */
-public class Canvas extends JPanel {
+public class WhiteboardGUI extends JPanel {
     // image where the user's drawing is stored
     private Image drawingBuffer;
     private JToggleButton eraser;
@@ -61,7 +61,7 @@ public class Canvas extends JPanel {
      * @param width width in pixels
      * @param height height in pixels
      */
-    public Canvas(int width, int height) {
+    public WhiteboardGUI(int width, int height) {
         this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
         eraser = new JToggleButton("Eraser");
@@ -339,7 +339,7 @@ public class Canvas extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-                Canvas canvas = new Canvas(800, 600);
+                WhiteboardGUI canvas = new WhiteboardGUI(800, 600);
                 window.add(canvas, BorderLayout.CENTER);
                 window.pack();
                 window.setVisible(true);
