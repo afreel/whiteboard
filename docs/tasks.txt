@@ -1,0 +1,5 @@
+Work until Saturday morning:
+
+Austin - Whiteboard class
+Johannes  - WhiteboardModel/GUI class(es)
+Michael -  WhiteboardServer class
