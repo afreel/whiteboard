@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+//Whiteboard represents a whiteboard on the server
 public class Whiteboard extends JPanel{
 	
 	private Image drawingBuffer;
