@@ -54,8 +54,7 @@ public class WhiteboardGUI extends JPanel {
     private final int LARGE = 50;
     
     private int eraserSize = MEDIUM;
-    
-    
+        
     /**
      * Make a canvas.
      * @param width width in pixels
@@ -139,7 +138,7 @@ public class WhiteboardGUI extends JPanel {
     
     public void revertToLastBMP() {
     	try {
-			drawingBuffer = ImageIO.read(new File("c:\\CanvasImage.BMP"));
+			drawingBuffer = ImageIO.read(new File("./././savedImages/CanvasImage.BMP"));
 			this.repaint();
 			System.out.println("reverted");
 		} catch (IOException e) {
@@ -152,7 +151,7 @@ public class WhiteboardGUI extends JPanel {
     public void saveBMP() {
     	BufferedImage bi = (BufferedImage) drawingBuffer;
     	try {
-			ImageIO.write(bi, "BMP", new File("c:\\CanvasImage.BMP"));
+			ImageIO.write(bi, "BMP", new File("./././savedImages/CanvasImage.BMP"));
 			System.out.println("saved");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -253,6 +252,7 @@ public class WhiteboardGUI extends JPanel {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
         Color color = palette.getColor();
+        System.out.println(color);
         g.setColor(color);
         int drawWidth = 5;
         g.setStroke(new BasicStroke(drawWidth));
@@ -278,6 +278,7 @@ public class WhiteboardGUI extends JPanel {
         this.repaint();
     }
     
+    
     /*
      * Add the mouse listener that supports the user's freehand drawing.
      */
@@ -299,7 +300,8 @@ public class WhiteboardGUI extends JPanel {
          * When mouse button is pressed down, start drawing.
          */
         public void mousePressed(MouseEvent e) {
-            lastX = e.getX();
+            System.out.println(e.paramString());
+        	lastX = e.getX();
             lastY = e.getY();
         }
 
@@ -328,10 +330,10 @@ public class WhiteboardGUI extends JPanel {
         public void mouseExited(MouseEvent e) { }
     }
     
-    
     /*
      * Main program. Make a window containing a Canvas.
      */
+    
     public static void main(String[] args) {
         // set up the UI (on the event-handling thread)
         SwingUtilities.invokeLater(new Runnable() {
