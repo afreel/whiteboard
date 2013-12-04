@@ -1,6 +1,8 @@
-package canvas;
+package server;
 
 import java.util.HashMap;
+
+import canvas.Whiteboard;
 
 public class WhiteboardServer {
 
@@ -13,3 +15,4 @@ public class WhiteboardServer {
 		
 	}
 }
+
