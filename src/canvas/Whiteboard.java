@@ -33,7 +33,7 @@ import javax.swing.SwingUtilities;
 public class Whiteboard extends JPanel{
 	
 	private Image drawingBuffer;
-	private List<Client> clients;
+	//private List<Client> clients;
 	private List<String> history;
 	private File bmp = new File("c:\\CanvasImage.BMP");
 	
@@ -68,24 +68,24 @@ public class Whiteboard extends JPanel{
         drawingBuffer = createImage(getWidth(), getHeight());
     }
     
-    private List<Client> getClients() {
-    	return this.clients;
-    }
-    
-    private void addClient(Client client) {
-    	clients.append(client);
-    }
-    
-    private void removeClient(Client client) {
-    	clients.remove(client);
-    }
-
-    private void sendMessageToAll(String message) {
-    	for (Client client : this.clients) {
-    		client.sendMessage(message);
-    	}
-    }
-    
+//    private List<Client> getClients() {
+//    	return this.clients;
+//    }
+//    
+//    private void addClient(Client client) {
+//    	clients.append(client);
+//    }
+//    
+//    private void removeClient(Client client) {
+//    	clients.remove(client);
+//    }
+//
+//    private void sendMessageToAll(String message) {
+//    	for (Client client : this.clients) {
+//    		client.sendMessage(message);
+//    	}
+//    }
+//    
     private void drawLine(int x1, int y1, int x2, int y2, int width, int r, int g, int b) {
     	Graphics2D graphics = (Graphics2D) drawingBuffer.getGraphics();
         
@@ -121,9 +121,9 @@ public class Whiteboard extends JPanel{
     	}
     }
     
-    private void addLine(String message) {
-    	[int x1, int y1, int x2, int y2, int width, int r, int g, int b] 
-    	String[] keys = message.split(" ");
-    	int x1 = (int) keys[0];
-    }
+//    private void addLine(String message) {
+//    	[int x1, int y1, int x2, int y2, int width, int r, int g, int b] 
+//    	String[] keys = message.split(" ");
+//    	int x1 = (int) keys[0];
+//    }
 }
