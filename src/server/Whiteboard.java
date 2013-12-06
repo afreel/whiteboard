@@ -73,7 +73,7 @@ public class Whiteboard extends JPanel{
     }
     
     private void addClient(Client client) {
-    	clients.append(client);
+    	//clients.append(client);
     }
     
     private void removeClient(Client client) {
@@ -82,7 +82,7 @@ public class Whiteboard extends JPanel{
 
     private void sendMessageToAll(String message) {
     	for (Client client : this.clients) {
-    		client.sendMessage(message);
+    		//client.sendMessage(message);
     	}
     }
     
@@ -121,9 +121,9 @@ public class Whiteboard extends JPanel{
     	}
     }
     
-    private void addLine(String message) {
-    	[int x1, int y1, int x2, int y2, int width, int r, int g, int b] 
-    	String[] keys = message.split(" ");
-    	int x1 = (int) keys[0];
-    }
+//    private void addLine(String message) {
+//    	[int x1, int y1, int x2, int y2, int width, int r, int g, int b] 
+//    	String[] keys = message.split(" ");
+//    	int x1 = (int) keys[0];
+//    }
 }
