@@ -15,7 +15,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,18 +32,22 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-//Whiteboard represents a whiteboard on the server
+/**
+ * Whiteboard represents a whiteboard on the server.  We will have an instance of this class for every whiteboard we have on
+ * the server so that we may maintain an updated copy of every whiteboard whether there are clients connected to it or not.
+ * When clients interact with this whiteboard and change it (connecting/disconnnecting/drawing/erasing), this whiteboard will
+ * be updated to reflect the changes.
+ */
+
 public class Whiteboard extends JPanel{
 	
-	private Image drawingBuffer;
+	private Image drawingBuffer; //
 	private List<Client> clients;
 	private List<String> history;
-	private File bmp = new File("c:\\CanvasImage.BMP");
+	private File bmp = new File("./././savedImages/CanvasImage.BMP");
 	
 	/**
      * Make a whiteboard.
-     * @param width width in pixels
-     * @param height height in pixels
      */
     public Whiteboard() {
     	this.setPreferredSize(new Dimension(800, 600));
@@ -70,20 +76,43 @@ public class Whiteboard extends JPanel{
     }
     
     private List<Client> getClients() {
-    	return this.clients;
+    	synchronized (clients) {
+    		return this.clients;
+    	}
     }
     
-    private void addClient(Client client) {
-    	clients.append(client);
+    public void addClient(Client client) {
+    	synchronized (clients) {
+    		clients.add(client);
+    		this.loadWhiteboard(client);
+    		String message = this.usersMessage();
+    		this.sendMessageToAll(message);
+    	}
     }
     
-    private void removeClient(Client client) {
-    	clients.remove(client);
+    
+    public void removeClient(Client client) {
+    	synchronized (clients) {
+    		clients.remove(client);
+    		String message = this.usersMessage();
+    		this.sendMessageToAll(message);
+    	}
+    }
+    
+    private String usersMessage() {
+    	StringBuilder message = new StringBuilder();
+		message.append("users");
+		for (Client c : this.clients) {
+			message.append(" " + c.getUsername());
+		}
+		return message.toString();
     }
 
     private void sendMessageToAll(String message) {
-    	for (Client client : this.clients) {
-    		client.sendMessage(message);
+    	synchronized (clients) {
+    		for (Client client : this.clients) {
+        		client.sendMessage(message);
+        	}
     	}
     }
     
@@ -102,29 +131,66 @@ public class Whiteboard extends JPanel{
      * reset the whiteboard's history by saving the current Image as a BMP file and clearing the history list
      */
     private void resetHistory() {
-    	synchronized (history) {
-    		BufferedImage bi = (BufferedImage) drawingBuffer;
-        	try {
-    			ImageIO.write(bi, "BMP", bmp);
-    			history.clear();
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
+    	BufferedImage bi = (BufferedImage) drawingBuffer;
+ 
+    	try {
+    		ImageIO.write(bi, "BMP", bmp);
+    		history.clear();
+    	} catch (IOException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
     	}
     }
     
     private void checkHistory() {
-    	synchronized (history) {
-    		if (history.size() > 50) {
-    			this.resetHistory();
-    		}
+    	if (history.size() > 50) {
+    		this.resetHistory();
     	}
     }
     
     private void addLine(String message) {
-    	[int x1, int y1, int x2, int y2, int width, int r, int g, int b] 
-    	String[] keys = message.split(" ");
-    	int x1 = (int) keys[0];
+    	synchronized (history) {
+    		history.add(message);
+    		
+    		String[] keys = message.split(" ");
+    		int x1 = Integer.getInteger(keys[1]);
+    		int y1 = Integer.getInteger(keys[2]);
+    		int x2 = Integer.getInteger(keys[3]);
+    		int y2 = Integer.getInteger(keys[4]);
+    		int width = Integer.getInteger(keys[5]); 
+    		int r = Integer.getInteger(keys[6]);
+    		int g = Integer.getInteger(keys[7]);
+    		int b = Integer.getInteger(keys[8]);
+    		this.drawLine(x1, y1, x2, y2, width, r, g, b);
+    		
+    		this.checkHistory();
+    	}
+    	this.sendMessageToAll(message);
+    }
+    
+    private void sendBMP(Client client) {
+    	byte[] b = new byte[(int) bmp.length()];
+    	try{
+    		FileInputStream fileInputStream = new FileInputStream(bmp);
+        	fileInputStream.read(b);
+    	}
+    	catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	//send byte[] b to client
+    }
+    
+    private void sendHistory(Client client) {
+    	synchronized (history) {
+    		for (String message : history) {
+    			client.sendMessage(message);
+    		}
+    	}
+    }
+    
+    private void loadWhiteboard(Client client) {
+    	this.sendBMP(client);
+    	this.sendHistory(client);
     }
 }
