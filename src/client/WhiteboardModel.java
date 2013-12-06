@@ -10,6 +10,8 @@ public class WhiteboardModel {
     private PrintWriter out;
     private BufferedReader in;
     private WhiteboardGUI gui;
+    private Message recievedMessage; 
+    
     /**
      * Instantiates a model(back-end to the Whiteboard Client GUI)
      * 
@@ -71,7 +73,8 @@ public class WhiteboardModel {
             try {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    SwingUtilities.invokeLater("");
+                    // TODO: implement runnable for SwingUtilities
+                    SwingUtilities.invokeLater();
                     System.out.println("Client just got from the server: '"
                             + inputLine + "'");
                 }
@@ -89,4 +92,11 @@ public class WhiteboardModel {
         }
     }
     
+    private class processMessage implements Runnable {
+        @Override
+        public void run() {
+            if()
+            
+        }
+    }
 }
