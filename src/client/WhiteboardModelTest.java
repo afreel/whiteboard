@@ -1,6 +1,7 @@
 package client;
 
 import java.net.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
@@ -9,31 +10,33 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class WhiteboardModelTest {
-    private List<String> clientSentMessages;
-    private List<String> clientReceivedMessages;
-    private List<String> serverSentMessages;
-    private List<String> serverReceivedMessages;
-
+    private List<String> clientSentMessages = new ArrayList<String>();
+    //private List<String> clientReceivedMessages;
+    private List<String> serverSentMessages = new ArrayList<String>();
+    private List<String> serverReceivedMessages = new ArrayList<String>();
+    
     @Test
     public void serverGetsMessage() throws IOException {
         String message1 = "HI";
         String message2 = "HI again";
+        WhiteboardGUI gui = new WhiteboardGUI(100, 100);
         
-        new Thread(new echoServer()).start();
+        Thread dummyServer = new Thread(new echoServer());
+        dummyServer.start();
 
         WhiteboardModel whitemodel = new WhiteboardModel("localhost",
-                4444);
+                4444, gui);
         
         clientSentMessages.add(message1);
         whitemodel.sendMessageToServer(message1);
         
         clientSentMessages.add(message2);
         whitemodel.sendMessageToServer(message2);
-
+        
         try {
-            // We need to make the algorithm wait so we can visually check that
-            // the GUI is correct
-            Thread.sleep(500);
+            // Give the server Thread some time to process all the messages
+            Thread.sleep(10);
+            assertEquals(clientSentMessages, serverReceivedMessages);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -49,7 +52,7 @@ public class WhiteboardModelTest {
             int portNumber = 4444;
             PrintWriter out;
             BufferedReader in;
-
+            
             try {
                 @SuppressWarnings("resource")
                 ServerSocket serverSocket = new ServerSocket(portNumber);
@@ -67,7 +70,7 @@ public class WhiteboardModelTest {
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    serverReceivedMessages.add("Server recieved: '" + inputLine + "'");
+                    serverReceivedMessages.add(inputLine);
                     serverSentMessages.add("Server echoing '" + inputLine
                             + "' back to client");
                     // Echo the message back

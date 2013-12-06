@@ -3,11 +3,13 @@ package client;
 import java.io.*;
 import java.net.*;
 
+import javax.swing.SwingUtilities;
+
 public class WhiteboardModel {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-
+    private WhiteboardGUI gui;
     /**
      * Instantiates a model(back-end to the Whiteboard Client GUI)
      * 
@@ -18,8 +20,9 @@ public class WhiteboardModel {
      * @throws UnknownHostException
      * @throws IOException
      */
-    WhiteboardModel(String host, int port) {
-
+    WhiteboardModel(String host, int port, WhiteboardGUI associatedGUI) {
+        gui = associatedGUI;
+        
         try {
             // Instantiate all finals
             socket = new Socket(host, port);
@@ -68,6 +71,7 @@ public class WhiteboardModel {
             try {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
+                    SwingUtilities.invokeLater("");
                     System.out.println("Client just got from the server: '"
                             + inputLine + "'");
                 }
@@ -84,4 +88,5 @@ public class WhiteboardModel {
             }
         }
     }
+    
 }
