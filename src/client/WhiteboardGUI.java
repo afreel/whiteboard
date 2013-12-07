@@ -358,11 +358,7 @@ public class WhiteboardGUI extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-<<<<<<< HEAD
-=======
 
-                //WhiteboardGUI canvas = new WhiteboardGUI(800, 600, "localhost", 4444, args[0], args[1]);
->>>>>>> 8b10929ac7b1129fb5ab8377c3ac0f1318b2039f
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
                 WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, 800, 600, "localhost", 4444);
