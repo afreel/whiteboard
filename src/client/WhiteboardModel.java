@@ -96,10 +96,14 @@ import java.net.UnknownHostException;
         }
         
         private void handleMessage(String message) {
-        	String[] messageAsArray = message.split(" ");
+        	final String[] messageAsArray = message.split(" ");
         	switch (messageAsArray[0]) {
-        	case "line": gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
-        	//TODO: handle Users
+        	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
+        		}
+        	});
         	}
-        }
-    }
+        	//TODO: handle Users
+       	}
+  }
