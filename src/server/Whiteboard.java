@@ -96,8 +96,10 @@ public class Whiteboard extends JPanel {
     public void addClient(Client client) {
     	synchronized (clients) {
     		clients.add(client);
+    		System.out.println("--> Sending history to client");
     		this.loadWhiteboard(client);
     		String message = this.usersMessage();
+    		System.out.println("--> Sending list of current users to client");
     		this.sendMessageToAll(message);
     	}
     }

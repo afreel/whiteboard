@@ -104,7 +104,7 @@ public class WhiteboardServer {
 					while (inputLine == null) {
 						inputLine = clientIn.readLine();
 					}
-					System.out.println("Received line");
+					System.out.println("Server Received message");
 					whiteboardMap.get(whiteboardID).addLine(inputLine);
 					inputLine = clientIn.readLine();
 				}
