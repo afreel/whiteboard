@@ -19,12 +19,12 @@ public class WhiteboardModelTest {
     public void serverGetsMessage() throws IOException {
         String message1 = "HI";
         String message2 = "HI again";
-        WhiteboardGUI gui = new WhiteboardGUI(100, 100);
+        WhiteboardGUI gui = new WhiteboardGUI(100, 100, "localhost", 1234);
         
         Thread dummyServer = new Thread(new echoServer());
         dummyServer.start();
 
-        WhiteboardModel whitemodel = new WhiteboardModel("localhost",
+        WhiteboardSeparateModel whitemodel = new WhiteboardSeparateModel("localhost",
                 4444, gui);
         
         clientSentMessages.add(message1);

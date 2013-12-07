@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -51,6 +52,8 @@ public class Whiteboard extends JPanel {
      */
     public Whiteboard() {
     	this.setPreferredSize(new Dimension(800, 600));
+    	clients = new ArrayList<Client>();
+    	history = new ArrayList<String>();
     }
     
     /**
@@ -60,7 +63,8 @@ public class Whiteboard extends JPanel {
     public void paintComponent(Graphics g) {
         // If this is the first time paintComponent() is being called,
         // make our drawing buffer.
-        if (drawingBuffer == null) {
+        System.out.println("Paint component being called");
+    	if (drawingBuffer == null) {
             makeDrawingBuffer();
         }
         
@@ -149,8 +153,8 @@ public class Whiteboard extends JPanel {
      */
     private void drawLine(int x1, int y1, int x2, int y2, int width, int r, int g, int b) {
     	Graphics2D graphics = (Graphics2D) drawingBuffer.getGraphics();
-        
-    	Color color = new Color(r,g,b);
+
+		Color color = new Color(r,g,b);
         graphics.setColor(color);
         graphics.setStroke(new BasicStroke(width));
         graphics.drawLine(x1, y1, x2, y2);
@@ -188,17 +192,17 @@ public class Whiteboard extends JPanel {
     public void addLine(String message) {
     	synchronized (history) {
     		history.add(message);
-    		
     		String[] keys = message.split(" ");
-    		int x1 = Integer.getInteger(keys[1]);
-    		int y1 = Integer.getInteger(keys[2]);
-    		int x2 = Integer.getInteger(keys[3]);
-    		int y2 = Integer.getInteger(keys[4]);
-    		int width = Integer.getInteger(keys[5]); 
-    		int r = Integer.getInteger(keys[6]);
-    		int g = Integer.getInteger(keys[7]);
-    		int b = Integer.getInteger(keys[8]);
-    		this.drawLine(x1, y1, x2, y2, width, r, g, b);
+    		System.out.println(keys.toString());
+    		int x1 = Integer.parseInt(keys[1]);
+    		int y1 = Integer.parseInt(keys[2]);
+    		int x2 = Integer.parseInt(keys[3]);
+    		int y2 = Integer.parseInt(keys[4]);
+    		int width = Integer.parseInt(keys[5]); 
+    		int r = Integer.parseInt(keys[6]);
+    		int g = Integer.parseInt(keys[7]);
+    		int b = Integer.parseInt(keys[8]);
+    		//this.drawLine(x1, y1, x2, y2, width, r, g, b);
     		
     		//this.checkHistory();
     	}

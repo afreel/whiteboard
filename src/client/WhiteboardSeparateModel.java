@@ -5,7 +5,7 @@ import java.net.*;
 
 import javax.swing.SwingUtilities;
 
-public class WhiteboardModel {
+public class WhiteboardSeparateModel {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
@@ -22,7 +22,7 @@ public class WhiteboardModel {
      * @throws UnknownHostException
      * @throws IOException
      */
-    WhiteboardModel(String host, int port, WhiteboardGUI associatedGUI) {
+   public WhiteboardSeparateModel(String host, int port, WhiteboardGUI associatedGUI) {
         gui = associatedGUI;
         
         try {
@@ -74,9 +74,10 @@ public class WhiteboardModel {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     // TODO: implement runnable for SwingUtilities
-//                    SwingUtilities.invokeLater();
+                	//SwingUtilities.invokeLater();
                     System.out.println("Client just got from the server: '"
                             + inputLine + "'");
+                    
                 }
             } catch (IOException e) {
                 e.printStackTrace(); // but don't terminate server
@@ -95,7 +96,6 @@ public class WhiteboardModel {
     private class processMessage implements Runnable {
         @Override
         public void run() {
-            
             
         }
     }

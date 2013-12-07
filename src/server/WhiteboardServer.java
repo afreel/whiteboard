@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import client.WhiteboardGUI;
+
 /**
  * 
  * Main server class. An instance of this class will listen on a specific port for new connecting clients.
@@ -58,7 +60,7 @@ public class WhiteboardServer {
 						// Extract desired information from the client's message
 						String[] inputAsArray = inputLine.split(" ");
 						String chosenWhiteboard = inputAsArray[1];
-						String userName = inputAsArray[4];
+						String userName = inputAsArray[3];
 						Client newClient = new Client(userName, socket);
 						
 						whiteboardMap.get(chosenWhiteboard).addClient(newClient);
@@ -77,11 +79,6 @@ public class WhiteboardServer {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		WhiteboardServer server = new WhiteboardServer();
-		server.serve(1234);
-	}
-	
 	/**
 	 * 
 	 * This will handle all messages sent from a given client.
@@ -100,17 +97,45 @@ public class WhiteboardServer {
 		@Override
 		public void run() {
 			try {
-				BufferedReader clientIn = new BufferedReader( new InputStreamReader(socket.getInputStream()));
+				BufferedReader clientIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 				String inputLine = clientIn.readLine();
-				while (inputLine != null) {
+				while(true){
+					while (inputLine == null) {
+						inputLine = clientIn.readLine();
+					}
+					System.out.println("Received line");
+					whiteboardMap.get(whiteboardID).addLine(inputLine);
 					inputLine = clientIn.readLine();
 				}
-				whiteboardMap.get(whiteboardID).addLine(inputLine);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
+	
+	public static void main(String[] args) throws IOException {
+		final WhiteboardServer server = new WhiteboardServer();
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					server.serve(4444);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
+		WhiteboardGUI.main(new String[] {"Michael"});
+		WhiteboardGUI.main(new String[] {"James"});
+		try {
+			Thread.sleep(10000);
+			WhiteboardGUI.main(new String[] {"Steven"});
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
 

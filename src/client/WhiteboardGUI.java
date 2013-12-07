@@ -15,8 +15,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -28,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
+
 
 /**
  * Canvas represents a drawing surface that allows the user to draw
@@ -54,14 +60,17 @@ public class WhiteboardGUI extends JPanel {
     private final int LARGE = 50;
     
     private int eraserSize = MEDIUM;
-        
+    
+    private WhiteboardModel model;
     /**
      * Make a canvas.
      * @param width width in pixels
      * @param height height in pixels
      */
-    public WhiteboardGUI(int width, int height) {
-        this.setPreferredSize(new Dimension(width, height));
+    public WhiteboardGUI(int width, int height, String host, int port, String username) {
+    	this.model = new WhiteboardModel(host, port, username);
+    	
+    	this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
         eraser = new JToggleButton("Eraser");
         accessPalette = new JToggleButton("Choose Color");
@@ -93,7 +102,6 @@ public class WhiteboardGUI extends JPanel {
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
         // wait until paintComponent() is first called.
-        
         
     	accessPalette.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
@@ -132,8 +140,8 @@ public class WhiteboardGUI extends JPanel {
     		public void actionPerformed(ActionEvent event) {
     			revertToLastBMP();
     		}
-    	});
-    	
+    	});  	
+    	System.out.println("Made it to gui initialization");
     }
     
     public void revertToLastBMP() {
@@ -248,21 +256,21 @@ public class WhiteboardGUI extends JPanel {
      * Draw a line between two points (x1, y1) and (x2, y2), specified in
      * pixels relative to the upper-left corner of the drawing buffer.
      */
-    private void drawLineSegment(int x1, int y1, int x2, int y2) {
-        Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-        
+    private void drawLocalLineSegment(int x1, int y1, int x2, int y2) {        
         Color color = palette.getColor();
-        System.out.println(color);
-        g.setColor(color);
-        int drawWidth = 5;
-        g.setStroke(new BasicStroke(drawWidth));
-        g.drawLine(x1, y1, x2, y2);
-        
-        // IMPORTANT!  every time we draw on the internal drawing buffer, we
-        // have to notify Swing to repaint this component on the screen.
-        this.repaint();
+        int drawWidth = 5; //TODO: Implement changeable width
+        model.drawLineOnServer(x1, y1, x2, y2, drawWidth, color.getRed(), color.getGreen(), color.getBlue());
     }
     
+    private void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb) {
+        Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
+        
+        g.setColor(new Color(Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb)));
+        g.setStroke(new BasicStroke(Integer.parseInt(strwidth)));
+        g.drawLine(Integer.parseInt(strx1), Integer.parseInt(stry1), Integer.parseInt(strx2), Integer.parseInt(stry2));
+        
+        this.repaint();
+    }
     /*
      * ERASER
      */
@@ -316,7 +324,7 @@ public class WhiteboardGUI extends JPanel {
             	erase(lastX, lastY, x, y);
             }
             else{
-            	drawLineSegment(lastX, lastY, x, y);
+            	drawLocalLineSegment(lastX, lastY, x, y);
             }
             lastX = x;
             lastY = y;
@@ -330,22 +338,120 @@ public class WhiteboardGUI extends JPanel {
         public void mouseExited(MouseEvent e) { }
     }
     
+    public class WhiteboardModel {
+        private Socket socket;
+        private PrintWriter out;
+        private BufferedReader in;
+        private WhiteboardGUI gui;
+//        private Message recievedMessage; 
+        
+        /**
+         * Instantiates a model(back-end to the Whiteboard Client GUI)
+         * 
+         * @param host
+         *            the host address of the server the clients wants to connect to
+         * @param port
+         *            the port number of the server
+         * @throws UnknownHostException
+         * @throws IOException
+         */
+       public WhiteboardModel(String host, int port, String username) {
+            
+            try {
+                // Instantiate all finals
+                socket = new Socket(host, port);
+                System.out.println("Waiting..");
+                System.out.println("Waiting...");
+                // Out, accessed to send data to the server:
+                out = new PrintWriter(socket.getOutputStream(), true);
+                // In, accessed to get data from the server, need a for loop to get
+                // check if it is ever updated:
+                in = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream()));
+                sendMessageToServer("whiteboard 1 username " + username);
+            } catch (IOException e1) {
+                System.out
+                        .println("Couldnt connect to " + host + " @ port " + port);
+                e1.printStackTrace();
+            }
+
+            // Have a thread constantly listen for server messages
+            new Thread(new serverListener()).start();
+
+        }
+
+        public void sendMessageToServer(String message) {
+            out.println(message);
+        }
+
+        public void connectToWhiteBoard(String whiteboard, String username) {
+            out.println("whiteboard " + whiteboard + "username" + username);
+        }
+
+        public void drawLineOnServer(int x1, int y1, int x2, int y2, int width,
+                int r, int g, int b) {
+        	out.println("line " + Integer.toString(x1) + " " + Integer.toString(y1)
+                    + " " + Integer.toString(x2) + " " + Integer.toString(y2) + " "
+                    + Integer.toString(width) + " " + Integer.toString(r) + " "
+                    + Integer.toString(g) + " " + Integer.toString(b));        	
+        }
+
+        /**
+         * serverListener is a functor that will be used for spinning a new Thread
+         * listening for messages sent from the server over the socket.
+         */
+        private class serverListener implements Runnable {
+            @Override
+            public void run() {
+                // Have a loop constantly checking for new messages from the
+                // server.
+                try {
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        System.out.println("Client just got from the server: '"
+                                + inputLine + "'");
+                        handleMessage(inputLine);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace(); // but don't terminate server
+                } finally {
+                    try {
+                        // Close connection with server
+                        System.out.println("Closing connection with server");
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        private void handleMessage(String message) {
+        	String[] messageAsArray = message.split(" ");
+        	switch(messageAsArray[0]) {
+        	case "line": drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
+        	//TODO: handle Users
+        	}
+        }
+    }
     /*
      * Main program. Make a window containing a Canvas.
      */
-    
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         // set up the UI (on the event-handling thread)
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            
+        	public void run() {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-                WhiteboardGUI canvas = new WhiteboardGUI(800, 600);
+                WhiteboardGUI canvas = new WhiteboardGUI(800, 600, "localhost", 4444, args[0]);
                 window.add(canvas, BorderLayout.CENTER);
                 window.pack();
                 window.setVisible(true);
             }
         });
     }
+    
+    
 }
