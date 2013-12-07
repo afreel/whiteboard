@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
          * @throws UnknownHostException
          * @throws IOException
          */
-       public WhiteboardModel(String host, int port, String username, String whiteboard, WhiteboardGUI associatedGUI) {
+       public WhiteboardModel(String host, int port, WhiteboardGUI associatedGUI) {
             
             try {
             	gui = associatedGUI;
@@ -38,7 +38,6 @@ import java.net.UnknownHostException;
                 // check if it is ever updated:
                 in = new BufferedReader(new InputStreamReader(
                         socket.getInputStream()));
-                sendMessageToServer("whiteboard " + whiteboard + " username " + username);
             } catch (IOException e1) {
                 System.out
                         .println("Couldnt connect to " + host + " @ port " + port);
@@ -55,7 +54,7 @@ import java.net.UnknownHostException;
         }
 
         public void connectToWhiteBoard(String whiteboard, String username) {
-            out.println("whiteboard " + whiteboard + "username" + username);
+            out.println("whiteboard " + whiteboard + " username " + username);
         }
 
         public void drawLineOnServer(int x1, int y1, int x2, int y2, int width,

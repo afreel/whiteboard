@@ -144,7 +144,7 @@ public class WhiteboardGUI extends JPanel {
     	});
     	
     	System.out.println("Made it to gui initialization");
-    	this.model = new WhiteboardModel(host, port, username, whiteboard, this);
+    	this.model = new WhiteboardModel(host, port, this);
     }
     
     public void revertToLastBMP() {
@@ -261,10 +261,9 @@ public class WhiteboardGUI extends JPanel {
      * Draw a line between two points (x1, y1) and (x2, y2), specified in
      * pixels relative to the upper-left corner of the drawing buffer.
      */
-    private void drawLocalLineSegment(int x1, int y1, int x2, int y2) {        
-        Color color = palette.getColor();
+    private void drawLocalLineSegment(int x1, int y1, int x2, int y2, Color color) {        
         int drawWidth = 5; //TODO: Implement changeable width
-        model.drawLineOnServer(x1, y1, x2, y2, drawWidth, color.getRed(), color.getGreen(), color.getBlue());
+        model.drawLineOnServer(x1, y1, x2, y2, eraserSize, color.getRed(), color.getGreen(), color.getBlue());
     }
     
     public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb) {
@@ -289,7 +288,6 @@ public class WhiteboardGUI extends JPanel {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
         g.setColor(Color.WHITE);
-        g.setStroke(new BasicStroke(eraserSize));
         g.drawLine(x1, y1, x2, y2);
         
         // IMPORTANT!  every time we draw on the internal drawing buffer, we
@@ -332,10 +330,10 @@ public class WhiteboardGUI extends JPanel {
             int x = e.getX();
             int y = e.getY();
             if (topbar.eraser.isSelected()){
-            	erase(lastX, lastY, x, y);
+            	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
             }
             else{
-            	drawLocalLineSegment(lastX, lastY, x, y);
+            	drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
             }
             lastX = x;
             lastY = y;
@@ -360,11 +358,9 @@ public class WhiteboardGUI extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-                //WhiteboardGUI canvas = new WhiteboardGUI(800, 600, "localhost", 4444, args[0], args[1]);
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
                 WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, 800, 600, "localhost", 4444);
-                //topbar.setPreferredSize(new Dimension(800,40));
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
                 window.add(bottombar, BorderLayout.SOUTH);
