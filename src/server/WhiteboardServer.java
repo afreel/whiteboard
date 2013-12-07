@@ -127,14 +127,17 @@ public class WhiteboardServer {
 			}
 		});
 		thread.start();
-		WhiteboardGUI.main(new String[] {"Michael"});
-		WhiteboardGUI.main(new String[] {"James"});
-		try {
-			Thread.sleep(10000);
-			WhiteboardGUI.main(new String[] {"Steven"});
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		WhiteboardGUI.main(new String[] {"Michael", "1"});
+		WhiteboardGUI.main(new String[] {"James", "1"});
+		WhiteboardGUI.main(new String[] {"Austin", "2"});
+		WhiteboardGUI.main(new String[] {"jimmy", "2"});
+
+//		try {
+//			Thread.sleep(10000);
+//			WhiteboardGUI.main(new String[] {"Steven"});
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 }
