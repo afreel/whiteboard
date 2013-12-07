@@ -24,6 +24,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
@@ -31,6 +32,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
@@ -43,18 +45,8 @@ public class WhiteboardGUI extends JPanel {
 	
     // image where the user's drawing is stored
     private Image drawingBuffer;
-    private JToggleButton eraser;
-    private JToggleButton accessPalette;
+    
     private JColorChooser palette;
-    
-    private JMenuBar eraseMenuBar;
-    private JMenu eraseMenu;
-    private JMenuItem eraseItemSmall;
-    private JMenuItem eraseItemMedium;
-    private JMenuItem eraseItemLarge;
-    
-    private JButton bmp;
-    private JButton revert;
     
     private final int SMALL = 10;
     private final int MEDIUM = 25;
@@ -62,88 +54,97 @@ public class WhiteboardGUI extends JPanel {
     
     private int eraserSize = MEDIUM;
     
+	private String username = "guest"; //default username to "guest"
+    private String whiteboard = "1"; //default to whiteboard 1
+    
+    private TopButtonBar topbar;
+    private BottomButtonBar bottombar;
+    
     private WhiteboardModel model;
     /**
      * Make a canvas.
      * @param width width in pixels
      * @param height height in pixels
      */
-    public WhiteboardGUI(int width, int height, String host, int port, String username, String whiteboard) {
+    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, int width, int height, String host, int port) {
     	
     	this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
-        eraser = new JToggleButton("Eraser");
-        accessPalette = new JToggleButton("Choose Color");
+        
+        topbar = TBB;
+        bottombar = BBB;
         palette = new JColorChooser();
         palette.setColor(Color.BLACK);
-        this.add(eraser);
-        this.add(accessPalette);
-        
-        //ERASER MENU TESTING
-        eraseMenuBar = new JMenuBar();
-        eraseMenu = new JMenu("Erase Menu");
-        eraseMenuBar.add(eraseMenu);
-        
-        eraseItemSmall = new JMenuItem("Small");
-        eraseItemMedium = new JMenuItem("Medium");
-        eraseItemLarge = new JMenuItem("Large");
-        eraseMenu.add(eraseItemSmall);
-        eraseMenu.add(eraseItemMedium);
-        eraseMenu.add(eraseItemLarge);
-        
-        this.add(eraseMenuBar);
-        
-        bmp = new JButton("BMP");
-        this.add(bmp);
-        
-        revert = new JButton("Revert");
-        this.add(revert);
         
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
         // wait until paintComponent() is first called.
         
-    	accessPalette.addActionListener(new ActionListener() {
+    	topbar.accessPalette.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			togglePalette();
     		}
     	});
     	
-    	eraseItemSmall.addActionListener(new ActionListener() {
+    	topbar.eraseItemSmall.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			eraserSize = SMALL;
-    			eraseMenu.setText(eraseItemSmall.getText());
+    			topbar.eraseMenu.setText(topbar.eraseItemSmall.getText());
     		}
     	});
     	
-    	eraseItemMedium.addActionListener(new ActionListener() {
+    	topbar.eraseItemMedium.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			eraserSize = MEDIUM;
-    			eraseMenu.setText(eraseItemMedium.getText());
+    			topbar.eraseMenu.setText(topbar.eraseItemMedium.getText());
     		}
     	});
     	
-    	eraseItemLarge.addActionListener(new ActionListener() {
+    	topbar.eraseItemLarge.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			eraserSize = LARGE;
-    			eraseMenu.setText(eraseItemLarge.getText());
+    			topbar.eraseMenu.setText(topbar.eraseItemLarge.getText());
     		}
     	});
     	
-    	bmp.addActionListener(new ActionListener() {
+    	topbar.bmp.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			saveBMP();
     		}
     	});
     	
-    	revert.addActionListener(new ActionListener() {
+    	topbar.revert.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			revertToLastBMP();
     		}
-    	});  	
+    	});  
+    	
+    	bottombar.inputName.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			username = bottombar.inputName.getText();
+    		}
+    	});
+    	
+    	bottombar.board1.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			whiteboard = "1";
+    		}
+    	});
+    	
+    	bottombar.board2.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			whiteboard = "2";
+    		}
+    	});
+    	
+    	bottombar.connect.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			model.connectToWhiteBoard(whiteboard, username);
+    		}
+    	});
+    	
     	System.out.println("Made it to gui initialization");
     	this.model = new WhiteboardModel(host, port, username, whiteboard, this);
-
     }
     
     public void revertToLastBMP() {
@@ -172,7 +173,7 @@ public class WhiteboardGUI extends JPanel {
     
     public void togglePalette() {
     	
-    	if (accessPalette.isSelected()) {
+    	if (topbar.accessPalette.isSelected()) {
     		this.add(palette);
     	}
     	else{
@@ -330,7 +331,7 @@ public class WhiteboardGUI extends JPanel {
         public void mouseDragged(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
-            if (eraser.isSelected()){
+            if (topbar.eraser.isSelected()){
             	erase(lastX, lastY, x, y);
             }
             else{
@@ -359,8 +360,14 @@ public class WhiteboardGUI extends JPanel {
                 JFrame window = new JFrame("Freehand Canvas");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
-                WhiteboardGUI canvas = new WhiteboardGUI(800, 600, "localhost", 4444, args[0], args[1]);
+                //WhiteboardGUI canvas = new WhiteboardGUI(800, 600, "localhost", 4444, args[0], args[1]);
+                TopButtonBar topbar = new TopButtonBar();
+                BottomButtonBar bottombar = new BottomButtonBar();
+                WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, 800, 600, "localhost", 4444);
+                //topbar.setPreferredSize(new Dimension(800,40));
                 window.add(canvas, BorderLayout.CENTER);
+                window.add(topbar, BorderLayout.NORTH);
+                window.add(bottombar, BorderLayout.SOUTH);
                 window.pack();
                 window.setVisible(true);
             }
