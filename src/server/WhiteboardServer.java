@@ -63,7 +63,7 @@ public class WhiteboardServer {
 						
 						whiteboardMap.get(chosenWhiteboard).addClient(newClient);
 						
-						Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard))
+						Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard));
 						handleClient.start();
 						threadList.add(handleClient);
 					}
