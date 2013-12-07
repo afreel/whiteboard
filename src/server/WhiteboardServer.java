@@ -132,12 +132,12 @@ public class WhiteboardServer {
 		WhiteboardGUI.main(new String[] {"Austin", "2"});
 		WhiteboardGUI.main(new String[] {"jimmy", "2"});
 
-//		try {
-//			Thread.sleep(10000);
-//			WhiteboardGUI.main(new String[] {"Steven"});
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			Thread.sleep(10000);
+			WhiteboardGUI.main(new String[] {"Steven"});
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
