@@ -19,7 +19,9 @@ public class WhiteboardModelTest {
     public void serverGetsMessage() throws IOException {
         String message1 = "HI";
         String message2 = "HI again";
-        WhiteboardGUI gui = new WhiteboardGUI(100, 100, "localhost", 1234);
+        TopButtonBar topbar = new TopButtonBar();
+        BottomButtonBar bottombar = new BottomButtonBar();
+        WhiteboardGUI gui = new WhiteboardGUI(topbar, bottombar, 100, 100, "localhost", 1234);
         
         Thread dummyServer = new Thread(new echoServer());
         dummyServer.start();
