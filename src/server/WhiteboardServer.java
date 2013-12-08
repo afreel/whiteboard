@@ -115,13 +115,11 @@ public class WhiteboardServer {
 					whiteboardMap.get(whiteboardID).addLine(inputLine);
 					inputLine = clientIn.readLine();
 				}
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
 	public static void main(String[] args) throws IOException {
 		final WhiteboardServer server = new WhiteboardServer();
 		Thread thread = new Thread(new Runnable() {
