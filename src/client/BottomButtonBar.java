@@ -18,7 +18,7 @@ public class BottomButtonBar extends JPanel {
     public JButton connect;
     
     public BottomButtonBar() {
-    	inputName = new JTextField("username");
+    	inputName = new JTextField("[guest]");
         
         //BOARD MENU
         boardMenuBar = new JMenuBar();

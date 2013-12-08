@@ -15,25 +15,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 
@@ -48,17 +38,12 @@ public class WhiteboardGUI extends JPanel {
     
     private JColorChooser palette;
     
-    private final int SMALL = 10;
-    private final int MEDIUM = 25;
-    private final int LARGE = 50;
-    
-    private int eraserSize = MEDIUM;
-    
-	private String username = "guest"; //default username to "guest"
+	private String username = "[guest]"; //default username to "guest"
     private String whiteboard = "1"; //default to whiteboard 1
     
     private TopButtonBar topbar;
     private BottomButtonBar bottombar;
+    private UsersBar usersbar;
     
     private WhiteboardModel model;
     /**
@@ -66,13 +51,15 @@ public class WhiteboardGUI extends JPanel {
      * @param width width in pixels
      * @param height height in pixels
      */
-    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, int width, int height, String host, int port) {
+    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, UsersBar UB, int width, int height, String host, int port) {
     	
     	this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
         
         topbar = TBB;
         bottombar = BBB;
+        usersbar = UB;
+        
         palette = new JColorChooser();
         palette.setColor(Color.BLACK);
         
@@ -83,27 +70,6 @@ public class WhiteboardGUI extends JPanel {
     	topbar.accessPalette.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			togglePalette();
-    		}
-    	});
-    	
-    	topbar.eraseItemSmall.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent event) {
-    			eraserSize = SMALL;
-    			topbar.eraseMenu.setText(topbar.eraseItemSmall.getText());
-    		}
-    	});
-    	
-    	topbar.eraseItemMedium.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent event) {
-    			eraserSize = MEDIUM;
-    			topbar.eraseMenu.setText(topbar.eraseItemMedium.getText());
-    		}
-    	});
-    	
-    	topbar.eraseItemLarge.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent event) {
-    			eraserSize = LARGE;
-    			topbar.eraseMenu.setText(topbar.eraseItemLarge.getText());
     		}
     	});
     	
@@ -139,6 +105,7 @@ public class WhiteboardGUI extends JPanel {
     	
     	bottombar.connect.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
+    			username = bottombar.inputName.getText();
     			model.connectToWhiteBoard(whiteboard, username);
     		}
     	});
@@ -263,7 +230,7 @@ public class WhiteboardGUI extends JPanel {
      */
     private void drawLocalLineSegment(int x1, int y1, int x2, int y2, Color color) {        
         int drawWidth = 5; //TODO: Implement changeable width
-        model.drawLineOnServer(x1, y1, x2, y2, eraserSize, color.getRed(), color.getGreen(), color.getBlue());
+        model.drawLineOnServer(x1, y1, x2, y2, topbar.strokeSlider.getValue(), color.getRed(), color.getGreen(), color.getBlue());
     }
     
     public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb) {
@@ -281,20 +248,10 @@ public class WhiteboardGUI extends JPanel {
         
         this.repaint();
     }
-    /*
-     * ERASER
-     */
-    private void erase(int x1, int y1, int x2, int y2) {
-        Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-        
-        g.setColor(Color.WHITE);
-        g.drawLine(x1, y1, x2, y2);
-        
-        // IMPORTANT!  every time we draw on the internal drawing buffer, we
-        // have to notify Swing to repaint this component on the screen.
-        this.repaint();
-    }
     
+    public void updateGuiUsers(List<String> users) {
+    	usersbar.updateUsersBar(users);
+    }
     
     /*
      * Add the mouse listener that supports the user's freehand drawing.
@@ -361,10 +318,12 @@ public class WhiteboardGUI extends JPanel {
 
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
-                WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, 800, 600, "localhost", 4444);
+                UsersBar usersbar = new UsersBar(new ArrayList<String>());
+                WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
                 window.add(bottombar, BorderLayout.SOUTH);
+                window.add(usersbar, BorderLayout.EAST);
                 window.pack();
                 window.setVisible(true);
             }

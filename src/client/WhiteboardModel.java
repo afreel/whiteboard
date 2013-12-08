@@ -6,13 +6,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
     
     public class WhiteboardModel {
         private Socket socket;
         private PrintWriter out;
         private BufferedReader in;
         private WhiteboardGUI gui;
-//        private Message recievedMessage; 
+        private List<String> usersList = new ArrayList<String>();
         
         /**
          * Instantiates a model(back-end to the Whiteboard Client GUI)
@@ -95,15 +97,23 @@ import java.net.UnknownHostException;
             }
         }
         
+        private void updateUsersList(String[] usersArray) {
+        	usersList = new ArrayList<String>();
+        	for (int i = 1; i < usersArray.length; i++) {
+				usersList.add(usersArray[i]);
+				}
+        	gui.updateGuiUsers(usersList);
+        }
+        
         private void handleMessage(String message) {
         	final String[] messageAsArray = message.split(" ");
         	switch (messageAsArray[0]) {
-        	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        	case "line": {javax.swing.SwingUtilities.invokeLater(new Runnable() {
         		public void run() {
         			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
         		}
-        	});
+        	}); break;}
+        	case "users": updateUsersList(messageAsArray);
         	}
-        	//TODO: handle Users
        	}
   }
