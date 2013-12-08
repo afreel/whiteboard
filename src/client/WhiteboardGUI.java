@@ -15,25 +15,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 
@@ -51,8 +40,11 @@ public class WhiteboardGUI extends JPanel {
 	private String username = "guest"; //default username to "guest"
     private String whiteboard = "1"; //default to whiteboard 1
     
+    private static List<String> currentUsers;
+    
     private TopButtonBar topbar;
     private BottomButtonBar bottombar;
+    private UsersBar usersbar;
     
     private WhiteboardModel model;
     /**
@@ -60,15 +52,20 @@ public class WhiteboardGUI extends JPanel {
      * @param width width in pixels
      * @param height height in pixels
      */
-    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, int width, int height, String host, int port) {
+    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, UsersBar UB, int width, int height, String host, int port) {
     	
     	this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
         
         topbar = TBB;
         bottombar = BBB;
+        usersbar = UB;
         palette = new JColorChooser();
         palette.setColor(Color.BLACK);
+        
+        //TESTING
+        currentUsers.add("Austin");
+        currentUsers.add("Michael");
         
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
@@ -320,10 +317,12 @@ public class WhiteboardGUI extends JPanel {
 
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
-                WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, 800, 600, "localhost", 4444);
+                UsersBar usersbar = new UsersBar(currentUsers);
+                WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
                 window.add(bottombar, BorderLayout.SOUTH);
+                window.add(usersbar, BorderLayout.EAST);
                 window.pack();
                 window.setVisible(true);
             }

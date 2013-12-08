@@ -34,15 +34,15 @@ public class TopButtonBar extends JPanel{
         this.add(eraser);
         this.add(accessPalette);
         
-        strokeSlider = new JSlider(STROKE_MIN,STROKE_MAX,STROKE_DEFAULT);
+        strokeSlider = new JSlider(STROKE_MIN, STROKE_MAX, STROKE_DEFAULT);
         strokeSlider.setMinorTickSpacing(2);
         strokeSlider.setMajorTickSpacing(10);
         strokeSlider.setPaintTicks(true);
         this.add(strokeSlider);
         
         Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-        labelTable.put( new Integer( STROKE_MIN ), new JLabel("Small") );
-        labelTable.put( new Integer( STROKE_MAX ), new JLabel("Large") );
+        labelTable.put( new Integer(STROKE_MIN), new JLabel("Small") );
+        labelTable.put( new Integer(STROKE_MAX), new JLabel("Large") );
         strokeSlider.setLabelTable(labelTable);
 
         strokeSlider.setPaintLabels(true);
