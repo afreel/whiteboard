@@ -17,6 +17,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -37,10 +38,8 @@ public class WhiteboardGUI extends JPanel {
     
     private JColorChooser palette;
     
-	private String username = "guest"; //default username to "guest"
+	private String username = "[guest]"; //default username to "guest"
     private String whiteboard = "1"; //default to whiteboard 1
-    
-    private static List<String> currentUsers;
     
     private TopButtonBar topbar;
     private BottomButtonBar bottombar;
@@ -60,12 +59,9 @@ public class WhiteboardGUI extends JPanel {
         topbar = TBB;
         bottombar = BBB;
         usersbar = UB;
+        
         palette = new JColorChooser();
         palette.setColor(Color.BLACK);
-        
-        //TESTING
-        currentUsers.add("Austin");
-        currentUsers.add("Michael");
         
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
@@ -109,6 +105,7 @@ public class WhiteboardGUI extends JPanel {
     	
     	bottombar.connect.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
+    			username = bottombar.inputName.getText();
     			model.connectToWhiteBoard(whiteboard, username);
     		}
     	});
@@ -252,6 +249,10 @@ public class WhiteboardGUI extends JPanel {
         this.repaint();
     }
     
+    public void updateGuiUsers(List<String> users) {
+    	usersbar.updateUsersBar(users);
+    }
+    
     /*
      * Add the mouse listener that supports the user's freehand drawing.
      */
@@ -317,7 +318,7 @@ public class WhiteboardGUI extends JPanel {
 
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
-                UsersBar usersbar = new UsersBar(currentUsers);
+                UsersBar usersbar = new UsersBar(new ArrayList<String>());
                 WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);

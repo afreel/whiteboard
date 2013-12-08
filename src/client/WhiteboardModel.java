@@ -14,7 +14,7 @@ import java.util.List;
         private PrintWriter out;
         private BufferedReader in;
         private WhiteboardGUI gui;
-        private List<String> usersList;
+        private List<String> usersList = new ArrayList<String>();
         
         /**
          * Instantiates a model(back-end to the Whiteboard Client GUI)
@@ -102,6 +102,7 @@ import java.util.List;
         	for (int i = 1; i < usersArray.length; i++) {
 				usersList.add(usersArray[i]);
 				}
+        	gui.updateGuiUsers(usersList);
         }
         
         private void handleMessage(String message) {
