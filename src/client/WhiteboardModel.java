@@ -114,11 +114,12 @@ import java.util.List;
         		}
         	}); break;
         	case "users": updateUsersList(messageAsArray); break;
-        	}
+        	
         	case "fillWhite": javax.swing.SwingUtilities.invokeLater(new Runnable() {
         		public void run() {
         			gui.fillWithWhite();
         		}
         	}); break;
-       	}
+        	}	
+       }
   }
