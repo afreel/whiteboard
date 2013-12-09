@@ -108,12 +108,17 @@ import java.util.List;
         private void handleMessage(String message) {
         	final String[] messageAsArray = message.split(" ");
         	switch (messageAsArray[0]) {
-        	case "line": {javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
         		public void run() {
         			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
         		}
-        	}); break;}
-        	case "users": updateUsersList(messageAsArray);
+        	}); break;
+        	case "users": updateUsersList(messageAsArray); break;
         	}
+        	case "fillWhite": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.fillWithWhite();
+        		}
+        	}); break;
        	}
   }
