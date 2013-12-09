@@ -1,5 +1,8 @@
 package client;
 
+import java.awt.Color;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -35,6 +38,9 @@ public class BottomButtonBar extends JPanel {
         this.add(boardMenuBar);
         this.add(inputName);
         this.add(connect);
+        
+        this.setBackground(new Color(220,220,220));
+        this.setBorder(BorderFactory.createRaisedBevelBorder());
     }
 
 }

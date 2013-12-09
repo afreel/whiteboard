@@ -3,6 +3,7 @@ package client;
 import java.awt.Color;
 import java.util.Hashtable;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
@@ -12,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.border.Border;
 
 public class TopButtonBar extends JPanel{
 	
@@ -52,6 +54,9 @@ public class TopButtonBar extends JPanel{
         
         revert = new JButton("Revert");
         this.add(revert);
+        
+        this.setBackground(new Color(220,220,220));
+        this.setBorder(BorderFactory.createRaisedBevelBorder());
 	}
 
 }
