@@ -174,13 +174,12 @@ public class WhiteboardGUI extends JPanel {
         drawingBuffer = createImage(getWidth(), getHeight());
         System.out.println("Made drawingBuffer");
         fillWithWhite();
-        drawSmile();
     }
     
     /*
      * Make the drawing buffer entirely white.
      */
-    private void fillWithWhite() {
+    public void fillWithWhite() {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
 
         g.setColor(Color.WHITE);

@@ -68,7 +68,7 @@ public class WhiteboardServer {
 								System.out.println(newClient);
 								whiteboardMap.get(chosenWhiteboard).addClient(newClient);
 								
-								Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard));
+								Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard, newClient));
 								handleClient.start();
 								threadList.add(handleClient);
 								connectedToWhiteboard = true;
@@ -93,11 +93,19 @@ public class WhiteboardServer {
 	 */
 	class ClientHandler implements Runnable {
 		private final Socket socket;
-		private final String whiteboardID;
+		private String whiteboardID;
+		private final Client client;
 		
-		public ClientHandler(Socket socket, String whiteboardID) {
+		/**
+		 * Instantiates a new ClientHandler instance. This will listen to a client and handle all messages that client sends.
+		 * @param socket client's socket
+		 * @param whiteboardID id of the whiteboard that client has chosen to connect to
+		 * @param client the client that this ClientHandler instance listens for
+		 */
+		public ClientHandler(Socket socket, String whiteboardID, Client client) {
 			this.socket = socket;
 			this.whiteboardID = whiteboardID;
+			this.client = client;
 		}
 		
 
@@ -112,12 +120,35 @@ public class WhiteboardServer {
 						inputLine = clientIn.readLine();
 					}
 					System.out.println("Server Received message");
-					whiteboardMap.get(whiteboardID).addLine(inputLine);
+					handleMessageFromClient(inputLine);
 					inputLine = clientIn.readLine();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		/**
+		 * Process the message sent from the client.
+		 * @param message message sent from client.
+		 */
+		private void handleMessageFromClient(String message) {
+			String[] messageAsArray = message.split(" ");
+			if (messageAsArray[0].equals("line")) { // Client has drawn a new line
+				whiteboardMap.get(whiteboardID).addLine(message);
+			}
+			else { // Client has chosen to connect to another whiteboard
+				whiteboardMap.get(whiteboardID).removeClient(this.client);
+				changeWhiteboardID(messageAsArray[1]);
+				whiteboardMap.get(whiteboardID).addClient(this.client);
+			}
+		}
+		/**
+		 * mutator method to update our whiteboardID variable. For use when the client switches whiteboards.
+		 * @param newWhiteboard id of new whiteboard.
+		 */
+		private void changeWhiteboardID(String newWhiteboard) {
+			this.whiteboardID = newWhiteboard;
 		}
 	}
 	public static void main(String[] args) throws IOException {
@@ -133,10 +164,9 @@ public class WhiteboardServer {
 		});
 		thread.start();
 		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-
+//		WhiteboardGUI.main(new String[]{});
+//		WhiteboardGUI.main(new String[]{});
+//		WhiteboardGUI.main(new String[]{});
 	}
 	
 }
