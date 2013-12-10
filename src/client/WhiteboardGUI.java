@@ -131,20 +131,9 @@ public class WhiteboardGUI extends JPanel {
     	});
     	
     	model = new WhiteboardModel(this);
-    	System.out.println("Made it to gui initialization");
     }
     
-//    public void revertToLastBMP() {
-//    	try {
-//			drawingBuffer = ImageIO.read(new File("./././savedImages/CanvasImage.BMP"));
-//			this.repaint();
-//			System.out.println("reverted");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			System.out.println("could not revert");
-//		}
-//    }
-    
+
     public void connect() {
     	if (bottombar.inputName.getText().length() > 0) {
 			username = bottombar.inputName.getText();	
@@ -203,7 +192,6 @@ public class WhiteboardGUI extends JPanel {
         // If this is the first time paintComponent() is being called,
         // make our drawing buffer.
         if (drawingBuffer == null) {
-        	System.out.println("About to call mdb");
         	makeDrawingBuffer();
         }
         
@@ -216,7 +204,6 @@ public class WhiteboardGUI extends JPanel {
      */
     private void makeDrawingBuffer() {
         drawingBuffer = createImage(getWidth(), getHeight());
-        System.out.println("Made drawingBuffer");
         fillWithWhite();
     }
     
@@ -277,11 +264,6 @@ public class WhiteboardGUI extends JPanel {
     }
     
     public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb, String user) {
-        if (drawingBuffer == null) {
-        	System.out.println("Making drawing buffer within lineongui");
-        	makeDrawingBuffer();
-        }
-        
         usersbar.updateUserColor(user, Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb));
     	Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
