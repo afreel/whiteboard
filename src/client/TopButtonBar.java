@@ -7,13 +7,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
-import javax.swing.border.Border;
 
 public class TopButtonBar extends JPanel{
 	
@@ -27,7 +24,6 @@ public class TopButtonBar extends JPanel{
     private final int STROKE_DEFAULT = 21;
     
     public JButton bmp;
-    public JButton revert;
 	
 	public TopButtonBar() {
 		
@@ -49,11 +45,8 @@ public class TopButtonBar extends JPanel{
 
         strokeSlider.setPaintLabels(true);
         
-        bmp = new JButton("BMP");
+        bmp = new JButton("Save Image");
         this.add(bmp);
-        
-        revert = new JButton("Revert");
-        this.add(revert);
         
         this.setBackground(new Color(220,220,220));
         this.setBorder(BorderFactory.createRaisedBevelBorder());

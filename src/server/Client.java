@@ -6,18 +6,15 @@ import java.net.Socket;
 
 public class Client {
 	private String username;
-	private Socket socket;
 	private PrintWriter printWriter;
 	
 	/**
 	 * 
 	 * @param username user's chosen username
-	 * @param socket user's socket
 	 * @throws IOException if error occurs while retrieving user's output stream
 	 */
 	public Client(String username, Socket socket) throws IOException {
 		this.username = username;
-		this.socket = socket;
 		this.printWriter = new PrintWriter(socket.getOutputStream(), true);
 	}
 	
@@ -36,9 +33,4 @@ public class Client {
 	public void sendMessage(String message) {
 		printWriter.println(message);
 	}
-	
-	public void closeStream() {
-		printWriter.close();
-	}
-		
 }

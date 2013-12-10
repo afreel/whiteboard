@@ -24,9 +24,8 @@ import javax.swing.JPanel;
  * be updated to reflect the changes and stored in a list of whiteboards on the server side.
  */
 
-public class Whiteboard extends JPanel {
+public class Whiteboard {
 	
-	private Image drawingBuffer; //image of our whiteboard
 	private List<Client> clients; //list of clients currently using this whiteboard
 	private List<String> history; //list of line draw messages sent to this whiteboard since its creation
 	private File bmp = new File("./././savedImages/CanvasImage.BMP"); //BMP file storing our image
@@ -35,42 +34,8 @@ public class Whiteboard extends JPanel {
      * Make a whiteboard.
      */
     public Whiteboard() {
-    	this.setPreferredSize(new Dimension(800, 600));
     	clients = new ArrayList<Client>();
     	history = new ArrayList<String>();
-    }
-    
-    /**
-     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        // If this is the first time paintComponent() is being called,
-        // make our drawing buffer.
-        System.out.println("Paint component being called");
-    	if (drawingBuffer == null) {
-            makeDrawingBuffer();
-        }
-        
-        // Copy the drawing buffer to the screen.
-        g.drawImage(drawingBuffer, 0, 0, null);
-    }
-    
-    /**
-     * Make the drawing buffer
-     */
-    private void makeDrawingBuffer() {
-        drawingBuffer = createImage(getWidth(), getHeight());
-    }
-    
-    /**
-     * 
-     * @return clients currently working on this whiteboard
-     */
-    private List<Client> getClients() {
-    	synchronized (clients) {
-    		return this.clients;
-    	}
     }
     
     /**
@@ -79,12 +44,12 @@ public class Whiteboard extends JPanel {
      */
     public void addClient(Client client) {
     	synchronized (clients) {
+    		this.sendMessageToAll("newUser " + client.getUsername());
     		clients.add(client);
+    		System.out.println("--> Sending list of current users to client");
+    		client.sendMessage(this.usersMessage());
     		System.out.println("--> Sending history to client");
     		this.loadWhiteboard(client);
-    		String message = this.usersMessage();
-    		System.out.println("--> Sending list of current users to client");
-    		this.sendMessageToAll(message);
     	}
     }
     
@@ -95,8 +60,7 @@ public class Whiteboard extends JPanel {
     public void removeClient(Client client) {
     	synchronized (clients) {
     		clients.remove(client);
-    		String message = this.usersMessage();
-    		this.sendMessageToAll(message);
+    		this.sendMessageToAll("removeUser " + client.getUsername());
     	}
     }
     
@@ -127,87 +91,16 @@ public class Whiteboard extends JPanel {
     }
     
     /**
-     * Draws a line onto our whiteboard image.
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @param width pixel thickness of line
-     * @param r red value [0-255]
-     * @param g green value [0-255]
-     * @param b blue value [0-255]
-     */
-    private void drawLine(int x1, int y1, int x2, int y2, int width, int r, int g, int b) {
-    	Graphics2D graphics = (Graphics2D) drawingBuffer.getGraphics();
-
-		Color color = new Color(r,g,b);
-        graphics.setColor(color);
-        graphics.setStroke(new BasicStroke(width));
-        graphics.drawLine(x1, y1, x2, y2);
-        
-        this.repaint();
-    }
-    
-    /**
-     * reset the whiteboard's history by saving the current Image as a BMP file and clearing the history list
-     */
-    //NOT USED RIGHT NOW ... WILL USE IF IMPLEMENTING BMP
-    private void resetHistory() {
-    	BufferedImage bi = (BufferedImage) drawingBuffer;
- 
-    	try {
-    		ImageIO.write(bi, "BMP", bmp);
-    		history.clear();
-    	} catch (IOException e) {
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	}
-    }
-    
-    //NOT USED RIGHT NOW ... WILL USE IF IMPLEMENTING BMP
-    private void checkHistory() {
-    	if (history.size() > 50) {
-    		this.resetHistory();
-    	}
-    }
-    
-    /**
      * Adds a line to this whiteboard.
      * @param message String message encoding the line being added to this whiteboard
      */
     public void addLine(String message) {
     	synchronized (history) {
     		history.add(message);
-    		String[] keys = message.split(" ");
-    		System.out.println(keys.toString());
-    		int x1 = Integer.parseInt(keys[1]);
-    		int y1 = Integer.parseInt(keys[2]);
-    		int x2 = Integer.parseInt(keys[3]);
-    		int y2 = Integer.parseInt(keys[4]);
-    		int width = Integer.parseInt(keys[5]); 
-    		int r = Integer.parseInt(keys[6]);
-    		int g = Integer.parseInt(keys[7]);
-    		int b = Integer.parseInt(keys[8]);
-    		//this.drawLine(x1, y1, x2, y2, width, r, g, b);
-    		
-    		//this.checkHistory();
     	}
     	this.sendMessageToAll(message);
     }
     
-    //NOT USED RIGHT NOW ... WILL USE IF IMPLEMENTING BMP
-    private void sendBMP(Client client) {
-    	byte[] b = new byte[(int) bmp.length()];
-    	try{
-    		FileInputStream fileInputStream = new FileInputStream(bmp);
-        	fileInputStream.read(b);
-    	}
-    	catch(Exception e) {
-    		e.printStackTrace();
-    	}
-    	
-    	//send byte[] b to client
-    }
     
     /**
      * Sends the list of lines drawn on this board to a client.
@@ -228,7 +121,6 @@ public class Whiteboard extends JPanel {
      * @param client client to send whiteboard info to
      */
     private void loadWhiteboard(Client client) {
-    	//this.sendBMP(client);
     	this.sendHistory(client);
     }
 }

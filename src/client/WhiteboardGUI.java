@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -42,6 +43,10 @@ public class WhiteboardGUI extends JPanel {
     
 	private String username = "[guest]"; //default username to "guest"
     private String whiteboard = "1"; //default to whiteboard 1
+    private String ip = "localhost"; //default IP address to be localhost
+    private int port = 4444; //default Port # is 4444
+    
+    boolean connectedToServer = false; //initially not connected to server
     
     private TopButtonBar topbar;
     private BottomButtonBar bottombar;
@@ -53,7 +58,7 @@ public class WhiteboardGUI extends JPanel {
      * @param width width in pixels
      * @param height height in pixels
      */
-    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, UsersBar UB, int width, int height, String host, int port) {
+    public WhiteboardGUI(TopButtonBar TBB, BottomButtonBar BBB, UsersBar UB, int width, int height) {
     	
     	this.setPreferredSize(new Dimension(width, height));
         addDrawingController();
@@ -81,57 +86,84 @@ public class WhiteboardGUI extends JPanel {
     		}
     	});
     	
-    	topbar.revert.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent event) {
-    			revertToLastBMP();
-    		}
-    	});  
+//    	topbar.revert.addActionListener(new ActionListener() {
+//    		public void actionPerformed(ActionEvent event) {
+//    			revertToLastBMP();
+//    		}
+//    	});  
     	
     	bottombar.inputName.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
-    			username = bottombar.inputName.getText();
+    			connect();
+    		}
+    	});
+    	
+    	bottombar.inputIP.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			connect();
+    		}
+    	});
+    	
+    	bottombar.inputPort.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			connect();
     		}
     	});
     	
     	bottombar.board1.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			whiteboard = "1";
+    			bottombar.boardMenu.setText(bottombar.board1.getText());
     		}
     	});
     	
     	bottombar.board2.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			whiteboard = "2";
+    			bottombar.boardMenu.setText(bottombar.board2.getText());
     		}
     	});
     	
     	bottombar.connect.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
-    			username = bottombar.inputName.getText();
-    			model.connectToWhiteBoard(whiteboard, username);
+    			connect();
     		}
     	});
     	
-    	
-    	System.out.println("Made it to gui initialization");
-    	this.model = new WhiteboardModel(host, port, this);
+    	model = new WhiteboardModel(this);
     }
     
-    public void revertToLastBMP() {
-    	try {
-			drawingBuffer = ImageIO.read(new File("./././savedImages/CanvasImage.BMP"));
-			this.repaint();
-			System.out.println("reverted");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("could not revert");
+
+    public void connect() {
+    	if (bottombar.inputName.getText().length() > 0) {
+			username = bottombar.inputName.getText();	
 		}
+    	if (bottombar.inputIP.getText().length() > 0) {
+    		ip = bottombar.inputIP.getText();
+		}
+    	if (bottombar.inputPort.getText().length() > 0) {
+    		port = Integer.getInteger(bottombar.inputPort.getText());	
+		}
+		
+		if (!connectedToServer){
+			model.connectToServer(ip, port);
+			connectedToServer = true;
+		}
+		model.connectToWhiteBoard(whiteboard, username);
+		bottombar.remove(bottombar.inputName);
+		bottombar.remove(bottombar.inputIP);
+		bottombar.remove(bottombar.inputPort);
+		bottombar.remove(bottombar.name);
+		bottombar.remove(bottombar.ip);
+		bottombar.remove(bottombar.port);
+		bottombar.boardMenu.setText("Board " + whiteboard);
+		bottombar.repaint();
     }
     
     public void saveBMP() {
     	BufferedImage bi = (BufferedImage) drawingBuffer;
     	try {
-			ImageIO.write(bi, "BMP", new File("./././savedImages/CanvasImage.BMP"));
+			ImageIO.write(bi, "BMP", new File("c:\\CanvasImage.BMP"));
 			System.out.println("saved");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -160,7 +192,6 @@ public class WhiteboardGUI extends JPanel {
         // If this is the first time paintComponent() is being called,
         // make our drawing buffer.
         if (drawingBuffer == null) {
-        	System.out.println("About to call mdb");
         	makeDrawingBuffer();
         }
         
@@ -173,7 +204,6 @@ public class WhiteboardGUI extends JPanel {
      */
     private void makeDrawingBuffer() {
         drawingBuffer = createImage(getWidth(), getHeight());
-        System.out.println("Made drawingBuffer");
         fillWithWhite();
     }
     
@@ -233,12 +263,8 @@ public class WhiteboardGUI extends JPanel {
         model.drawLineOnServer(x1, y1, x2, y2, topbar.strokeSlider.getValue(), color.getRed(), color.getGreen(), color.getBlue());
     }
     
-    public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb) {
-        if (drawingBuffer == null) {
-        	System.out.println("Making drawing buffer within lineongui");
-        	makeDrawingBuffer();
-        }
-        
+    public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb, String user) {
+        usersbar.updateUserColor(user, Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb));
     	Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
         
@@ -249,8 +275,28 @@ public class WhiteboardGUI extends JPanel {
         this.repaint();
     }
     
-    public void updateGuiUsers(List<String> users) {
-    	usersbar.updateUsersBar(users);
+    /**
+     * populate usersbar with the list of currently connected users
+     * @param users users currently connected to this client's whiteboard
+     */
+    public void loadGuiUsers(List<String> users) {
+    	usersbar.loadUsersBar(users);
+    }
+    
+    /**
+     * update usersbar with a newly connected user
+     * @param user user connected
+     */
+    public void addNewUser(String user) {
+    	usersbar.addNewUser(user, false); //
+    }
+    
+    /**
+     * update usersbar with information that previously connected user is now disconnected 
+     * @param user user disconnected
+     */
+    public void removeUser(String user) {
+    	usersbar.removeUser(user);
     }
     
     /*
@@ -286,14 +332,16 @@ public class WhiteboardGUI extends JPanel {
         public void mouseDragged(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
-            if (topbar.eraser.isSelected()){
-            	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
+            if (connectedToServer) {
+            	if (topbar.eraser.isSelected()){
+                	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
+                }
+                else{
+                	drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
+                }
+                lastX = x;
+                lastY = y;
             }
-            else{
-            	drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
-            }
-            lastX = x;
-            lastY = y;
         }
 
         // Ignore all these other mouse events.
@@ -322,13 +370,18 @@ public class WhiteboardGUI extends JPanel {
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
+                
+//                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//                int screenWidth = (int) screenSize.getWidth();
+//                int screenHeight = (int) screenSize.getHeight();
 
-                final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
-
+                final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600); //18.217.1.147
+                
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
                 window.add(bottombar, BorderLayout.SOUTH);
                 window.add(usersbar, BorderLayout.EAST);
+                window.setResizable(false);
                 window.pack();
                 window.addWindowListener(new WindowAdapter() {
                 	public void windowClosing(WindowEvent e) {

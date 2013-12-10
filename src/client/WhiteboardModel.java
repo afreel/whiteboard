@@ -26,29 +26,9 @@ import java.util.List;
          * @throws UnknownHostException
          * @throws IOException
          */
-       public WhiteboardModel(String host, int port, WhiteboardGUI associatedGUI) {
 
-            try {
-            	gui = associatedGUI;
-            	// Instantiate all finals
-                socket = new Socket(host, port);
-                System.out.println("Waiting..");
-                System.out.println("Waiting...");
-                // Out, accessed to send data to the server:
-                out = new PrintWriter(socket.getOutputStream(), true);
-                // In, accessed to get data from the server, need a for loop to get
-                // check if it is ever updated:
-                in = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream()));
-            } catch (IOException e1) {
-                System.out
-                        .println("Couldnt connect to " + host + " @ port " + port);
-                e1.printStackTrace();
-            }
-
-            // Have a thread constantly listen for server messages
-            new Thread(new serverListener()).start();
-
+       public WhiteboardModel(WhiteboardGUI associatedGUI) {          
+    	   gui = associatedGUI;
         }
 
         public void sendMessageToServer(String message) {
@@ -67,6 +47,28 @@ import java.util.List;
                     + Integer.toString(g) + " " + Integer.toString(b));        	
         }
         
+        public void connectToServer(String host, int port) {
+        	try {
+            	// Instantiate all finals
+                socket = new Socket(host, port);
+                System.out.println("Waiting..");
+                System.out.println("Waiting...");
+                // Out, accessed to send data to the server:
+                out = new PrintWriter(socket.getOutputStream(), true);
+                // In, accessed to get data from the server, need a for loop to get
+                // check if it is ever updated:
+                in = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream()));
+            } catch (IOException e1) {
+                System.out
+                        .println("Couldnt connect to " + host + " @ port " + port);
+                e1.printStackTrace();
+            }
+
+            // Have a thread constantly listen for server messages
+            new Thread(new serverListener()).start();
+        }
+        
         public void disconnectFromServer() {
         	out.println("disconnect");
         }
@@ -76,7 +78,7 @@ import java.util.List;
         	for (int i = 1; i < usersArray.length; i++) {
 				usersList.add(usersArray[i]);
 				}
-        	gui.updateGuiUsers(usersList);
+        	gui.loadGuiUsers(usersList);
         }
         
         
@@ -85,7 +87,7 @@ import java.util.List;
         	switch (messageAsArray[0]) {
         	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
         		public void run() {
-        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
+        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8], messageAsArray[9]);
         		}
         	}); break;
         	case "users": updateUsersList(messageAsArray); break;
@@ -95,6 +97,18 @@ import java.util.List;
         			gui.fillWithWhite();
         		}
         	}); break;
+        	
+        	case "newUser": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.addNewUser(messageAsArray[1]);
+        		}
+        	}); break;
+        	
+        	case "removeUser": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.removeUser(messageAsArray[1]);
+        		}
+        	}); break;
         	}	
        }
 
@@ -102,6 +116,7 @@ import java.util.List;
          * serverListener is a functor that will be used for spinning a new Thread
          * listening for messages sent from the server over the socket.
          */
+        
         private class serverListener implements Runnable {
             @Override
             public void run() {
