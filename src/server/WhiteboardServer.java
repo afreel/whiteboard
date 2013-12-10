@@ -19,7 +19,6 @@ import client.WhiteboardGUI;
  * is spun to listen for changes to they make to their local whiteboard.
  *
  */
-
 public class WhiteboardServer {
 
 	private final HashMap<String, Whiteboard> whiteboardMap;
@@ -107,7 +106,6 @@ public class WhiteboardServer {
 			this.whiteboardID = whiteboardID;
 			this.client = client;
 		}
-		
 
 		@Override
 		public void run() {
@@ -134,15 +132,18 @@ public class WhiteboardServer {
 		 */
 		private void handleMessageFromClient(String message) {
 			String[] messageAsArray = message.split(" ");
-			if (messageAsArray[0].equals("line")) { // Client has drawn a new line
-				whiteboardMap.get(whiteboardID).addLine(message);
-			}
-			else { // Client has chosen to connect to another whiteboard
+			switch(messageAsArray[0]) {
+			case "line":  // Client has drawn a new line
+				whiteboardMap.get(whiteboardID).addLine(message); break;
+			case "whiteboard": // Client has chosen to connect to another whiteboard
 				whiteboardMap.get(whiteboardID).removeClient(this.client);
 				changeWhiteboardID(messageAsArray[1]);
-				whiteboardMap.get(whiteboardID).addClient(this.client);
+				whiteboardMap.get(whiteboardID).addClient(this.client); break;
+			case "disconnect": // Client has closed their window, and is now disconnected from the server
+				whiteboardMap.get(whiteboardID).removeClient(this.client); break;
 			}
 		}
+		
 		/**
 		 * mutator method to update our whiteboardID variable. For use when the client switches whiteboards.
 		 * @param newWhiteboard id of new whiteboard.
@@ -151,6 +152,7 @@ public class WhiteboardServer {
 			this.whiteboardID = newWhiteboard;
 		}
 	}
+	
 	public static void main(String[] args) throws IOException {
 		final WhiteboardServer server = new WhiteboardServer();
 		Thread thread = new Thread(new Runnable() {
@@ -162,6 +164,7 @@ public class WhiteboardServer {
 				}
 			}
 		});
+		
 		thread.start();
 		WhiteboardGUI.main(new String[]{});
 		WhiteboardGUI.main(new String[]{});

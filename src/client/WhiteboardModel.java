@@ -102,6 +102,7 @@ import java.util.List;
          * serverListener is a functor that will be used for spinning a new Thread
          * listening for messages sent from the server over the socket.
          */
+        
         private class serverListener implements Runnable {
             @Override
             public void run() {

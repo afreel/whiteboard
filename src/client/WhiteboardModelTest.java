@@ -29,7 +29,7 @@ public class WhiteboardModelTest {
         Thread dummyServer = new Thread(new echoServer());
         dummyServer.start();
 
-        WhiteboardSeparateModel whitemodel = new WhiteboardSeparateModel("localhost",
+        WhiteboardModel whitemodel = new WhiteboardModel("localhost",
                 4444, gui);
         
         clientSentMessages.add(message1);
