@@ -233,12 +233,13 @@ public class WhiteboardGUI extends JPanel {
         model.drawLineOnServer(x1, y1, x2, y2, topbar.strokeSlider.getValue(), color.getRed(), color.getGreen(), color.getBlue());
     }
     
-    public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb) {
+    public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb, String user) {
         if (drawingBuffer == null) {
         	System.out.println("Making drawing buffer within lineongui");
         	makeDrawingBuffer();
         }
         
+        usersbar.updateUserColor(user, Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb));
     	Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
         
         
@@ -249,8 +250,28 @@ public class WhiteboardGUI extends JPanel {
         this.repaint();
     }
     
-    public void updateGuiUsers(List<String> users) {
-    	usersbar.updateUsersBar(users);
+    /**
+     * populate usersbar with the list of currently connected users
+     * @param users users currently connected to this client's whiteboard
+     */
+    public void loadGuiUsers(List<String> users) {
+    	usersbar.loadUsersBar(users);
+    }
+    
+    /**
+     * update usersbar with a newly connected user
+     * @param user user connected
+     */
+    public void addNewUser(String user) {
+    	usersbar.addNewUser(user, false); //
+    }
+    
+    /**
+     * update usersbar with information that previously connected user is now disconnected 
+     * @param user user disconnected
+     */
+    public void removeUser(String user) {
+    	usersbar.removeUser(user);
     }
     
     /*
