@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -159,7 +160,6 @@ public class WhiteboardGUI extends JPanel {
 			model.connectToServer(ip, port);
 			connectedToServer = true;
 		}
-		
 		model.connectToWhiteBoard(whiteboard, username);
 		bottombar.remove(bottombar.inputName);
 		bottombar.remove(bottombar.inputIP);
@@ -168,6 +168,7 @@ public class WhiteboardGUI extends JPanel {
 		bottombar.remove(bottombar.ip);
 		bottombar.remove(bottombar.port);
 		bottombar.boardMenu.setText("Board " + whiteboard);
+		bottombar.repaint();
     }
     
     public void saveBMP() {
@@ -363,6 +364,10 @@ public class WhiteboardGUI extends JPanel {
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
+                
+//                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//                int screenWidth = (int) screenSize.getWidth();
+//                int screenHeight = (int) screenSize.getHeight();
 
                 final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600); //18.217.1.147
                 
