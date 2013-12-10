@@ -1,0 +1,14 @@
+package server;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class WhiteboardTest {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+
+}

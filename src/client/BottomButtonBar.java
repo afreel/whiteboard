@@ -26,7 +26,9 @@ public class BottomButtonBar extends JPanel {
     public JMenu boardMenu;
     public JMenuItem board1;
     public JMenuItem board2;
+    
     public JButton connect;
+    public JButton joinBoard;
     
     public BottomButtonBar() {
     	inputName = new JTextField(8);
@@ -49,10 +51,8 @@ public class BottomButtonBar extends JPanel {
         
         boardMenuBar.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         
-        connect = new JButton("Connect!");
-        
-        this.add(name);
-        this.add(inputName);
+        connect = new JButton("Connect");
+        joinBoard = new JButton("Join Board");
         
         this.add(ip);
         this.add(inputIP);
@@ -60,7 +60,6 @@ public class BottomButtonBar extends JPanel {
         this.add(port);
         this.add(inputPort);
         
-        this.add(boardMenuBar);
         this.add(connect);
         
         this.setBackground(new Color(220,220,220));

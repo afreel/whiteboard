@@ -4,19 +4,22 @@ import java.awt.Color;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
-
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 
 public class TopButtonBar extends JPanel{
 	
+	public ImageIcon drawIcon;
+	public ImageIcon eraseIcon;
+	public JLabel imageLabel;
+	
 	public JToggleButton eraser;
     public JToggleButton accessPalette;
-    private JColorChooser palette;
     
     public JSlider strokeSlider;
     private final int STROKE_MIN = 1;
@@ -26,6 +29,11 @@ public class TopButtonBar extends JPanel{
     public JButton bmp;
 	
 	public TopButtonBar() {
+		
+		drawIcon = new ImageIcon("././images/pencil.png");
+		eraseIcon = new ImageIcon("././images/eraser.gif");
+		imageLabel = new JLabel(drawIcon);
+		this.add(imageLabel);
 		
 		eraser = new JToggleButton("Eraser");
         accessPalette = new JToggleButton("Choose Color");
