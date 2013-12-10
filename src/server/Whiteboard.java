@@ -1,21 +1,7 @@
 package server;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-
 
 /**
  * Whiteboard represents a whiteboard on the server.  We will have an instance of this class for every whiteboard we have on
@@ -28,7 +14,6 @@ public class Whiteboard {
 	
 	private List<Client> clients; //list of clients currently using this whiteboard
 	private List<String> history; //list of line draw messages sent to this whiteboard since its creation
-	private File bmp = new File("./././savedImages/CanvasImage.BMP"); //BMP file storing our image
 	
 	/**
      * Make a whiteboard.
@@ -100,7 +85,6 @@ public class Whiteboard {
     	}
     	this.sendMessageToAll(message);
     }
-    
     
     /**
      * Sends the list of lines drawn on this board to a client.
