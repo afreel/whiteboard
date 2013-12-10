@@ -86,12 +86,6 @@ public class WhiteboardGUI extends JPanel {
     		}
     	});
     	
-//    	topbar.revert.addActionListener(new ActionListener() {
-//    		public void actionPerformed(ActionEvent event) {
-//    			revertToLastBMP();
-//    		}
-//    	});  
-    	
     	bottombar.inputName.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			connect();
@@ -130,34 +124,52 @@ public class WhiteboardGUI extends JPanel {
     		}
     	});
     	
+    	bottombar.joinBoard.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			joinBoard();
+    		}
+    	});
+    	
     	model = new WhiteboardModel(this);
     }
     
 
     public void connect() {
-    	if (bottombar.inputName.getText().length() > 0) {
-			username = bottombar.inputName.getText();	
-		}
     	if (bottombar.inputIP.getText().length() > 0) {
     		ip = bottombar.inputIP.getText();
 		}
     	if (bottombar.inputPort.getText().length() > 0) {
-    		port = Integer.parseInt(bottombar.inputPort.getText());
+    		port = Integer.parseInt(bottombar.inputPort.getText());	
 		}
-		
-		if (!connectedToServer){
-			model.connectToServer(ip, port);
-			connectedToServer = true;
+		try {
+			if (!connectedToServer){
+				model.connectToServer(ip, port);
+				connectedToServer = true;
+			}
+			bottombar.removeAll();
+			bottombar.add(bottombar.name);
+			bottombar.add(bottombar.inputName);
+			bottombar.add(bottombar.boardMenuBar);
+			bottombar.add(bottombar.joinBoard);
+			bottombar.revalidate();
+			bottombar.repaint();
 		}
-		model.connectToWhiteBoard(whiteboard, username);
-		bottombar.remove(bottombar.inputName);
-		bottombar.remove(bottombar.inputIP);
-		bottombar.remove(bottombar.inputPort);
-		bottombar.remove(bottombar.name);
-		bottombar.remove(bottombar.ip);
-		bottombar.remove(bottombar.port);
-		bottombar.boardMenu.setText("Board " + whiteboard);
-		bottombar.repaint();
+		catch(Exception e) {
+			System.out.println("Could not connect to Server. Invalid port or IP address");
+		}
+
+    }
+    
+    public void joinBoard() {
+    	if (bottombar.inputName.getText().length() > 0) {
+			username = bottombar.inputName.getText();	
+		}
+    	model.connectToWhiteBoard(whiteboard, username);
+    	bottombar.boardMenu.setText("Board " + whiteboard);
+    	bottombar.remove(bottombar.name);
+    	bottombar.remove(bottombar.inputName);
+    	bottombar.revalidate();
+    	bottombar.repaint();
     }
     
     public void saveBMP() {
@@ -368,9 +380,6 @@ public class WhiteboardGUI extends JPanel {
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
                 
-//                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//                int screenWidth = (int) screenSize.getWidth();
-//                int screenHeight = (int) screenSize.getHeight();
 
                 final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600); //18.217.1.147
                 
