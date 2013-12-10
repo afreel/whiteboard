@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 
 public class UsersBar extends JPanel{
@@ -81,7 +80,6 @@ public class UsersBar extends JPanel{
 	 * @param b blue component of the color they are drawing in
 	 */
 	public void updateUserColor(String user, int r, int g, int b) {
-		System.out.println(usersLabelMap.toString());
 		usersLabelMap.get(user).setForeground(new Color(r,g,b));
 	}
 	
