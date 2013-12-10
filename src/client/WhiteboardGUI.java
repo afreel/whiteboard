@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
  * Canvas represents a drawing surface that allows the user to draw
  * on it freehand, with the mouse.
  */
-public class WhiteboardGUI extends JPanel {
+public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 	
     // image where the user's drawing is stored
     private Image drawingBuffer;
@@ -381,7 +381,10 @@ public class WhiteboardGUI extends JPanel {
         public void mouseEntered(MouseEvent e) { }
         public void mouseExited(MouseEvent e) { }
     }
-
+    
+    public WhiteboardModel getModel(){
+        return this.model;
+    }
     /*
      * Main program. Make a window containing a Canvas.
      */
