@@ -319,7 +319,9 @@ public class WhiteboardGUI extends JPanel {
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
+
                 final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
+
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
                 window.add(bottombar, BorderLayout.SOUTH);
