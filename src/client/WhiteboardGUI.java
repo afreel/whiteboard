@@ -39,6 +39,8 @@ public class WhiteboardGUI extends JPanel {
     // image where the user's drawing is stored
     private Image drawingBuffer;
     
+    private boolean drawing = true; //used to track if user is currently in draw or erase mode
+    
     private JColorChooser palette;
     
 	private String username = "[guest]"; //default username to "guest"
@@ -73,6 +75,23 @@ public class WhiteboardGUI extends JPanel {
         // note: we can't call makeDrawingBuffer here, because it only
         // works *after* this canvas has been added to a window.  Have to
         // wait until paintComponent() is first called.
+        
+        topbar.eraser.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			if (topbar.eraser.isSelected()) {
+    				drawing = false;
+    				topbar.imageLabel.setIcon(topbar.eraseIcon);
+    				topbar.revalidate();
+    				topbar.repaint();
+    			}
+    			else {
+    				drawing = true;
+    				topbar.imageLabel.setIcon(topbar.drawIcon);
+    				topbar.revalidate();
+    				topbar.repaint();
+    			}
+    		}
+    	});
         
     	topbar.accessPalette.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
@@ -271,7 +290,6 @@ public class WhiteboardGUI extends JPanel {
      * pixels relative to the upper-left corner of the drawing buffer.
      */
     private void drawLocalLineSegment(int x1, int y1, int x2, int y2, Color color) {        
-        int drawWidth = 5; //TODO: Implement changeable width
         model.drawLineOnServer(x1, y1, x2, y2, topbar.strokeSlider.getValue(), color.getRed(), color.getGreen(), color.getBlue());
     }
     
@@ -345,11 +363,11 @@ public class WhiteboardGUI extends JPanel {
             int x = e.getX();
             int y = e.getY();
             if (connectedToServer) {
-            	if (topbar.eraser.isSelected()){
-                	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
+            	if (drawing){
+            		drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
                 }
                 else{
-                	drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
+                	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
                 }
                 lastX = x;
                 lastY = y;
