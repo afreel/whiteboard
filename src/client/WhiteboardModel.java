@@ -77,7 +77,7 @@ import java.util.List;
         	for (int i = 1; i < usersArray.length; i++) {
 				usersList.add(usersArray[i]);
 				}
-        	gui.updateGuiUsers(usersList);
+        	gui.loadGuiUsers(usersList);
         }
         
         
@@ -86,7 +86,7 @@ import java.util.List;
         	switch (messageAsArray[0]) {
         	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
         		public void run() {
-        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
+        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8], messageAsArray[9]);
         		}
         	}); break;
         	case "users": updateUsersList(messageAsArray); break;
@@ -94,6 +94,18 @@ import java.util.List;
         	case "fillWhite": javax.swing.SwingUtilities.invokeLater(new Runnable() {
         		public void run() {
         			gui.fillWithWhite();
+        		}
+        	}); break;
+        	
+        	case "newUser": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.addNewUser(messageAsArray[1]);
+        		}
+        	}); break;
+        	
+        	case "removeUser": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.removeUser(messageAsArray[1]);
         		}
         	}); break;
         	}	

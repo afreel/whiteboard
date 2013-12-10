@@ -134,7 +134,7 @@ public class WhiteboardServer {
 			String[] messageAsArray = message.split(" ");
 			switch(messageAsArray[0]) {
 			case "line":  // Client has drawn a new line
-				whiteboardMap.get(whiteboardID).addLine(message); break;
+				whiteboardMap.get(whiteboardID).addLine(message + " " + this.client.getUsername()); break;
 			case "whiteboard": // Client has chosen to connect to another whiteboard
 				whiteboardMap.get(whiteboardID).removeClient(this.client);
 				changeWhiteboardID(messageAsArray[1]);
@@ -142,6 +142,7 @@ public class WhiteboardServer {
 			case "disconnect": // Client has closed their window, and is now disconnected from the server
 				whiteboardMap.get(whiteboardID).removeClient(this.client); break;
 			}
+			
 		}
 		
 		/**
@@ -168,8 +169,8 @@ public class WhiteboardServer {
 		thread.start();
 		WhiteboardGUI.main(new String[]{});
 		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
 	}
 	
 }

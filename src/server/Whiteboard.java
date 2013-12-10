@@ -79,12 +79,12 @@ public class Whiteboard extends JPanel {
      */
     public void addClient(Client client) {
     	synchronized (clients) {
+    		this.sendMessageToAll("newUser " + client.getUsername());
     		clients.add(client);
+    		System.out.println("--> Sending list of current users to client");
+    		client.sendMessage(this.usersMessage());
     		System.out.println("--> Sending history to client");
     		this.loadWhiteboard(client);
-    		String message = this.usersMessage();
-    		System.out.println("--> Sending list of current users to client");
-    		this.sendMessageToAll(message);
     	}
     }
     
@@ -95,8 +95,7 @@ public class Whiteboard extends JPanel {
     public void removeClient(Client client) {
     	synchronized (clients) {
     		clients.remove(client);
-    		String message = this.usersMessage();
-    		this.sendMessageToAll(message);
+    		this.sendMessageToAll("removeUser " + client.getUsername());
     	}
     }
     
