@@ -66,6 +66,37 @@ import java.util.List;
                     + Integer.toString(width) + " " + Integer.toString(r) + " "
                     + Integer.toString(g) + " " + Integer.toString(b));        	
         }
+        
+        public void disconnectFromServer() {
+        	out.println("disconnect");
+        }
+        
+        private void updateUsersList(String[] usersArray) {
+        	usersList = new ArrayList<String>();
+        	for (int i = 1; i < usersArray.length; i++) {
+				usersList.add(usersArray[i]);
+				}
+        	gui.updateGuiUsers(usersList);
+        }
+        
+        
+        private void handleMessage(String message) {
+        	final String[] messageAsArray = message.split(" ");
+        	switch (messageAsArray[0]) {
+        	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
+        		}
+        	}); break;
+        	case "users": updateUsersList(messageAsArray); break;
+        	
+        	case "fillWhite": javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			gui.fillWithWhite();
+        		}
+        	}); break;
+        	}	
+       }
 
         /**
          * serverListener is a functor that will be used for spinning a new Thread
@@ -96,30 +127,5 @@ import java.util.List;
                 }
             }
         }
-        
-        private void updateUsersList(String[] usersArray) {
-        	usersList = new ArrayList<String>();
-        	for (int i = 1; i < usersArray.length; i++) {
-				usersList.add(usersArray[i]);
-				}
-        	gui.updateGuiUsers(usersList);
-        }
-        
-        private void handleMessage(String message) {
-        	final String[] messageAsArray = message.split(" ");
-        	switch (messageAsArray[0]) {
-        	case "line": javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        		public void run() {
-        			gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2], messageAsArray[3], messageAsArray[4], messageAsArray[5], messageAsArray[6], messageAsArray[7], messageAsArray[8]);
-        		}
-        	}); break;
-        	case "users": updateUsersList(messageAsArray); break;
-        	
-        	case "fillWhite": javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        		public void run() {
-        			gui.fillWithWhite();
-        		}
-        	}); break;
-        	}	
-       }
+
   }

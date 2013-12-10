@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +112,7 @@ public class WhiteboardGUI extends JPanel {
     		}
     	});
     	
+    	
     	System.out.println("Made it to gui initialization");
     	this.model = new WhiteboardModel(host, port, this);
     }
@@ -120,7 +123,6 @@ public class WhiteboardGUI extends JPanel {
 			this.repaint();
 			System.out.println("reverted");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("could not revert");
 		}
@@ -132,7 +134,6 @@ public class WhiteboardGUI extends JPanel {
 			ImageIO.write(bi, "BMP", new File("./././savedImages/CanvasImage.BMP"));
 			System.out.println("saved");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("not saved");
 		}
@@ -311,19 +312,24 @@ public class WhiteboardGUI extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
             
         	public void run() {
-                JFrame window = new JFrame("Freehand Canvas");
+                JFrame window = new JFrame("Whiteboard");
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 window.setLayout(new BorderLayout());
 
                 TopButtonBar topbar = new TopButtonBar();
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
-                WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
+                final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 800, 600, "localhost", 4444);
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
                 window.add(bottombar, BorderLayout.SOUTH);
                 window.add(usersbar, BorderLayout.EAST);
                 window.pack();
+                window.addWindowListener(new WindowAdapter() {
+                	public void windowClosing(WindowEvent e) {
+                		canvas.model.disconnectFromServer();
+                	}
+                });
                 window.setVisible(true);
             }
         });
