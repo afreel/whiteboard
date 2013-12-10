@@ -11,35 +11,52 @@ import org.junit.Test;
 
 public class WhiteboardModelTest {
     private List<String> clientSentMessages = new ArrayList<String>();
-    //private List<String> clientReceivedMessages;
-    private List<String> serverSentMessages = new ArrayList<String>();
     private List<String> serverReceivedMessages = new ArrayList<String>();
     
     @Test
     public void serverGetsMessage() throws IOException {
-        String message1 = "HI";
-        String message2 = "HI again";
-        
-        TopButtonBar topbar = new TopButtonBar();
-        BottomButtonBar bottombar = new BottomButtonBar();
-        UsersBar usersbar = new UsersBar(new ArrayList<String>());
-        
-        WhiteboardGUI gui = new WhiteboardGUI(topbar, bottombar, usersbar, 100, 100, "localhost", 1234);
-        
-        Thread dummyServer = new Thread(new echoServer());
-        dummyServer.start();
+        // This is the message we will try to send to the server
+        String message1 = "test message 1";
 
-        WhiteboardModel whitemodel = new WhiteboardModel("localhost",
-                4444, gui);
+        // Start up a dummy server
+        new Thread(new listenServer()).start();
         
+        // Generate a dummy GUI we can associate with the model
+        WhiteboardGUI gui = guiBuilderHelper();
+        WhiteboardModel whitemodel = gui.getModel();
+
+        // Send a message to the server
         clientSentMessages.add(message1);
         whitemodel.sendMessageToServer(message1);
         
-        clientSentMessages.add(message2);
-        whitemodel.sendMessageToServer(message2);
-        
         try {
-            // Give the server Thread some time to process all the messages
+            // Give the server Thread some time to process the message
+            Thread.sleep(10);
+            assertEquals(clientSentMessages, serverReceivedMessages);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void serverGetsLineMessage() throws IOException {
+        
+        // This is the message we will try to send to the server
+        String expect = "line 100 100 200 200 5 0 0 0";
+        
+        // Start up a dummy server
+        new Thread(new listenServer()).start();
+        
+        // Generate a dummy GUI we can associate with the model
+        WhiteboardGUI gui = guiBuilderHelper();
+        WhiteboardModel whitemodel = gui.getModel();
+
+        // Send a message to the server
+        clientSentMessages.add(expect);
+        whitemodel.drawLineOnServer(100, 100, 200, 200, 5, 0, 0, 0);
+
+        try {
+            // Give the server Thread some time to process the message
             Thread.sleep(10);
             assertEquals(clientSentMessages, serverReceivedMessages);
         } catch (InterruptedException e) {
@@ -48,39 +65,26 @@ public class WhiteboardModelTest {
     }
 
     /**
-     * Generates a server that prints out whichever message it gets and echoes
-     * the same message back.
+     * Generates a server that stores whichever message it gets.
      */
-    public class echoServer implements Runnable {
+    public class listenServer implements Runnable {
         @Override
         public void run() {
             int portNumber = 4444;
-            PrintWriter out;
             BufferedReader in;
             
             try {
-                @SuppressWarnings("resource")
                 ServerSocket serverSocket = new ServerSocket(portNumber);
-                System.out.println("Server started");
-                
                 Socket clientSocket = serverSocket.accept();
-                String client = clientSocket.getInetAddress().toString();
-                
-                System.out.println(client
-                        + " connected");
 
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(
                         clientSocket.getInputStream()));
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     serverReceivedMessages.add(inputLine);
-                    serverSentMessages.add("Server echoing '" + inputLine
-                            + "' back to client");
-                    // Echo the message back
-                    out.println(inputLine);
                 }
+                return;
 
             } catch (IOException e) {
                 System.out
@@ -90,4 +94,14 @@ public class WhiteboardModelTest {
             }
         }
     }
+
+    public WhiteboardGUI guiBuilderHelper() {
+        TopButtonBar topbar = new TopButtonBar();
+        BottomButtonBar bottombar = new BottomButtonBar();
+        UsersBar usersbar = new UsersBar(new ArrayList<String>());
+        return new WhiteboardGUI(topbar, bottombar, usersbar, 100, 100,
+                "localhost", 4444);
+    }
+    
+    
 }

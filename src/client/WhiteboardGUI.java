@@ -303,7 +303,10 @@ public class WhiteboardGUI extends JPanel {
         public void mouseEntered(MouseEvent e) { }
         public void mouseExited(MouseEvent e) { }
     }
-
+    
+    public WhiteboardModel getModel(){
+        return this.model;
+    }
     /*
      * Main program. Make a window containing a Canvas.
      */

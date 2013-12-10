@@ -27,7 +27,7 @@ import java.util.List;
          * @throws IOException
          */
        public WhiteboardModel(String host, int port, WhiteboardGUI associatedGUI) {
-            
+
             try {
             	gui = associatedGUI;
             	// Instantiate all finals
