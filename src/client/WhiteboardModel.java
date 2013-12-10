@@ -26,10 +26,28 @@ import java.util.List;
          * @throws UnknownHostException
          * @throws IOException
          */
-       public WhiteboardModel(String host, int port, WhiteboardGUI associatedGUI) {
-            
-            try {
-            	gui = associatedGUI;
+       public WhiteboardModel(WhiteboardGUI associatedGUI) {          
+    	   gui = associatedGUI;
+        }
+
+        public void sendMessageToServer(String message) {
+            out.println(message);
+        }
+
+        public void connectToWhiteBoard(String whiteboard, String username) {
+            out.println("whiteboard " + whiteboard + " username " + username);
+        }
+
+        public void drawLineOnServer(int x1, int y1, int x2, int y2, int width,
+                int r, int g, int b) {
+        	out.println("line " + Integer.toString(x1) + " " + Integer.toString(y1)
+                    + " " + Integer.toString(x2) + " " + Integer.toString(y2) + " "
+                    + Integer.toString(width) + " " + Integer.toString(r) + " "
+                    + Integer.toString(g) + " " + Integer.toString(b));        	
+        }
+        
+        public void connectToServer(String host, int port) {
+        	try {
             	// Instantiate all finals
                 socket = new Socket(host, port);
                 System.out.println("Waiting..");
@@ -48,23 +66,6 @@ import java.util.List;
 
             // Have a thread constantly listen for server messages
             new Thread(new serverListener()).start();
-
-        }
-
-        public void sendMessageToServer(String message) {
-            out.println(message);
-        }
-
-        public void connectToWhiteBoard(String whiteboard, String username) {
-            out.println("whiteboard " + whiteboard + " username " + username);
-        }
-
-        public void drawLineOnServer(int x1, int y1, int x2, int y2, int width,
-                int r, int g, int b) {
-        	out.println("line " + Integer.toString(x1) + " " + Integer.toString(y1)
-                    + " " + Integer.toString(x2) + " " + Integer.toString(y2) + " "
-                    + Integer.toString(width) + " " + Integer.toString(r) + " "
-                    + Integer.toString(g) + " " + Integer.toString(b));        	
         }
         
         public void disconnectFromServer() {

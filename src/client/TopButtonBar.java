@@ -27,7 +27,6 @@ public class TopButtonBar extends JPanel{
     private final int STROKE_DEFAULT = 21;
     
     public JButton bmp;
-    public JButton revert;
 	
 	public TopButtonBar() {
 		
@@ -49,11 +48,8 @@ public class TopButtonBar extends JPanel{
 
         strokeSlider.setPaintLabels(true);
         
-        bmp = new JButton("BMP");
+        bmp = new JButton("Save Image");
         this.add(bmp);
-        
-        revert = new JButton("Revert");
-        this.add(revert);
         
         this.setBackground(new Color(220,220,220));
         this.setBorder(BorderFactory.createRaisedBevelBorder());
