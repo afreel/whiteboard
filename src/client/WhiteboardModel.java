@@ -17,7 +17,7 @@ import java.util.List;
         private List<String> usersList = new ArrayList<String>();
         
         /**
-         * Instantiates a model(back-end to the Whiteboard Client GUI)
+         * Instantiates a model (back-end to the Whiteboard Client GUI)
          * 
          * @param host
          *            the host address of the server the clients wants to connect to
@@ -46,23 +46,17 @@ import java.util.List;
                     + Integer.toString(g) + " " + Integer.toString(b));        	
         }
         
-        public void connectToServer(String host, int port) {
-        	try {
-            	// Instantiate all finals
-                socket = new Socket(host, port);
-                System.out.println("Waiting..");
-                System.out.println("Waiting...");
-                // Out, accessed to send data to the server:
-                out = new PrintWriter(socket.getOutputStream(), true);
-                // In, accessed to get data from the server, need a for loop to get
-                // check if it is ever updated:
-                in = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream()));
-            } catch (IOException e1) {
-                System.out
-                        .println("Couldnt connect to " + host + " @ port " + port);
-                e1.printStackTrace();
-            }
+        public void connectToServer(String host, int port) throws IOException {
+           	// Instantiate all finals
+            socket = new Socket(host, port);
+            System.out.println("Waiting..");
+            System.out.println("Waiting...");
+            // Out, accessed to send data to the server:
+            out = new PrintWriter(socket.getOutputStream(), true);
+            // In, accessed to get data from the server, need a for loop to get
+            // check if it is ever updated:
+            in = new BufferedReader(new InputStreamReader(
+                    socket.getInputStream()));
 
             // Have a thread constantly listen for server messages
             new Thread(new serverListener()).start();
