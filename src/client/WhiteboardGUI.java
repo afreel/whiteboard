@@ -142,7 +142,7 @@ public class WhiteboardGUI extends JPanel {
     		ip = bottombar.inputIP.getText();
 		}
     	if (bottombar.inputPort.getText().length() > 0) {
-    		port = Integer.getInteger(bottombar.inputPort.getText());	
+    		port = Integer.parseInt(bottombar.inputPort.getText());
 		}
 		
 		if (!connectedToServer){

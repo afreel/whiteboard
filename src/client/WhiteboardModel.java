@@ -59,9 +59,8 @@ import java.util.List;
                 in = new BufferedReader(new InputStreamReader(
                         socket.getInputStream()));
             } catch (IOException e1) {
-                System.out
-                        .println("Couldnt connect to " + host + " @ port " + port);
-                e1.printStackTrace();
+                System.out.println("Couldnt connect to " + host + " @ port " + port);
+                //e1.printStackTrace();
             }
 
             // Have a thread constantly listen for server messages
