@@ -8,6 +8,10 @@ import java.util.List;
  * the server so that we may maintain an updated copy of every whiteboard whether there are clients connected to it or not.
  * When clients interact with this whiteboard and change it (connecting/disconnnecting/drawing/erasing), this whiteboard will
  * be updated to reflect the changes and stored in a list of whiteboards on the server side.
+ * 
+ * TESTING:
+ *  all public methods are run through base tests in WhiteboardTest.java
+ *  to fully test the Whiteboard class, we used manual tests
  */
 
 /*
