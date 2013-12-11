@@ -1,13 +1,10 @@
 package client;
 
-import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
 
 import static org.junit.Assert.*;
-
-import org.junit.Before;
 import org.junit.Test;
 
 import testing.TestUtils;
@@ -29,7 +26,7 @@ public class WhiteboardModelTest {
     public void clientCorretlySendsDrawLineMessages() throws IOException {
         int portNumber = 4444;
         TestUtils test = new TestUtils();
-        List clientSentMessages = new ArrayList<String>();
+        List<String> clientSentMessages = new ArrayList<String>();
         
         test.startServer(portNumber);
         System.out.println("Server started");
@@ -50,7 +47,7 @@ public class WhiteboardModelTest {
     public void clientCorretlySendsWhiteboardMessages() throws IOException {
         int portNumber = 4445;
         TestUtils test = new TestUtils();
-        List clientSentMessages = new ArrayList<String>();
+        List<String> clientSentMessages = new ArrayList<String>();
         
         test.startServer(portNumber);
         System.out.println("Server started");
@@ -71,7 +68,7 @@ public class WhiteboardModelTest {
     public void clientCorretlySendsDisconnectMessage() throws IOException {
         int portNumber = 4446;
         TestUtils test = new TestUtils();
-        List clientSentMessages = new ArrayList<String>();
+        List<String> clientSentMessages = new ArrayList<String>();
         
         test.startServer(portNumber);
         System.out.println("Server started");
@@ -92,13 +89,15 @@ public class WhiteboardModelTest {
     public void clientCorretlyReceivesDrawLineMessage() throws IOException {
         int portNumber = 4447;
         TestUtils test = new TestUtils();
-        List serverSentMessages = new ArrayList<String>();
+        List<String> serverSentMessages = new ArrayList<String>();
         
         test.startServer(portNumber);
        
         // Generate a dummy front end we can associate with the model
         WhiteboardModel modelToTest = new WhiteboardModel(test.new dummyFrontEnd());
         modelToTest.connectToServer("localhost", portNumber);
+        // We need to start a server listener thread that will handle messages sent in
+        // from the server.
         modelToTest.connectToWhiteBoard("whiteboard", "username", false);
         
         // Send a message to the client
@@ -109,6 +108,6 @@ public class WhiteboardModelTest {
         
         test.sleep();
         
-        assertEquals(serverSentMessages, test.clientReceivedMessages);
+        assertEquals(serverSentMessages, test.guiReceivedMessages);
     }
 }

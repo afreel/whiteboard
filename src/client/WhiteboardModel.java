@@ -61,7 +61,7 @@ public class WhiteboardModel {
         // Store the input stream of the server
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-     }
+    }
 
     /**
      * Sends a message through the output stream to the server
@@ -89,29 +89,43 @@ public class WhiteboardModel {
      * @param username
      *            a string of any characters representing the users username.
      * @param usernameConfirmed
-     * 			  a boolean indicating whether or not it is necessary to listen for a server response here. If a client's username
-     * 			  has already been confirmed as unique, then we need not listen for a server response and may return true.
-     * @throws IOException 
-     * 			  if an IO error occurs on retrieving the BufferedReader instance
-     * @returns true 
-     * 			   if the client's submitted username is accepted as unique, or has already been accepted as so. 
-     * 			false 
-     * 			   if another user is connected to the server with the same username.
+     *            a boolean indicating whether or not it is necessary to listen
+     *            for a server response here. If a client's username has already
+     *            been confirmed as unique, then we need not listen for a server
+     *            response and may return true.
+     * @throws IOException
+     *             if an IO error occurs on retrieving the BufferedReader
+     *             instance
+     * @returns true if the client's submitted username is accepted as unique,
+     *          or has already been accepted as so. false if another user is
+     *          connected to the server with the same username.
      */
-    public boolean connectToWhiteBoard(String whiteboard, String username, boolean usernameConfirmed) throws IOException {
-        sendMessageToServer("whiteboard " + whiteboard + " username " + username);
-        if (usernameConfirmed) {return true;} // If the client's username has already been accepted, then we don't want to listen to server here,
-        else{								  // as that is already being handled by a serverListener
+    public boolean connectToWhiteBoard(String whiteboard, String username,
+            boolean usernameConfirmed) throws IOException {
+
+        sendMessageToServer("whiteboard " + whiteboard + " username "
+                + username);
+
+        // If the client's user name has already been accepted, then we don't
+        // want to start a new server listener, else we would be doubling up the
+        // messages sent to the client
+        if (usernameConfirmed) {
+            return true;
+        } else {
             BufferedReader inReader = new BufferedReader(in);
             String inputLine = inReader.readLine();
-            while (inputLine == null){inputLine = inReader.readLine();};
-            if (inputLine.equals("usernameTaken")) {
-            	gui.loadUsernameTakenImage();
-            	return false;
+            while (inputLine == null) {
+                inputLine = inReader.readLine();
             }
-            else {
-            	handleMessage(inputLine);
-            	new Thread(new ServerListener()).start(); // Have a thread constantly listen for server messages
+            ;
+            if (inputLine.equals("usernameTaken")) {
+                gui.loadUsernameTakenImage();
+                return false;
+            } else {
+                handleMessage(inputLine);
+                new Thread(new ServerListener()).start(); // Have a thread
+                                                          // constantly listen
+                                                          // for server messages
             }
             return true;
         }
@@ -179,8 +193,8 @@ public class WhiteboardModel {
      */
     private void handleMessage(String message) {
         // Separate the message to get each argument in the message:
-    	final String[] messageAsArray = message.split(" ");
-    	
+        final String[] messageAsArray = message.split(" ");
+
         switch (messageAsArray[0]) {
 
         case "users":
@@ -214,7 +228,7 @@ public class WhiteboardModel {
                 }
             });
             break;
-          
+
         }
     }
 
@@ -230,8 +244,8 @@ public class WhiteboardModel {
             try {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-        			System.out.println("Client got message " + inputLine);
-                	handleMessage(inputLine);
+                    System.out.println("Client got message " + inputLine);
+                    handleMessage(inputLine);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

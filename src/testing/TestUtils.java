@@ -1,14 +1,7 @@
 package testing;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +34,9 @@ public class TestUtils {
     private Socket clientSocket;
     private PrintWriter socketOut;
     public List<String> serverReceivedMessages = new ArrayList<String>();
-    public List<String> clientReceivedMessages = new ArrayList<String>();
+    public ArrayList<ArrayList<String>> clientReceivedMessages = new ArrayList<ArrayList<String>>();
+    public List<String> guiReceivedMessages = new ArrayList<String>();
+    
     private final long startTime = System.currentTimeMillis();
 
     /**
@@ -49,7 +44,6 @@ public class TestUtils {
      * 
      * @throws IOException
      */
-    @SuppressWarnings("resource")
     public void startServer(final int portNo) throws IOException {
         new Thread(new Runnable() {
             public void run() {
@@ -58,47 +52,21 @@ public class TestUtils {
                 try {
                     serverSocket = new ServerSocket(portNo);
                     System.out.println("Started server");
-                    clientSocket = serverSocket.accept();
-                    System.out.println("Accepted a client");
+                    
+                    while(true){
+                        clientSocket = serverSocket.accept();
+                        System.out.println("Accepted a client");
 
-                    socketOut = new PrintWriter(clientSocket.getOutputStream(),
-                            true);
-                    socketOut.println("HI");
+                        socketOut = new PrintWriter(clientSocket.getOutputStream(),
+                                true);
+                        
+                        new Thread(new serverListener()).start();
+                    }
+                    
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
 
-                new Thread(new Runnable() {
-                    public void run() {
-                        String inputLine;
-                        BufferedReader in = null;
-
-                        try {
-                            in = new BufferedReader(new InputStreamReader(
-                                    clientSocket.getInputStream()));
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        try {
-                            while ((inputLine = in.readLine()) != null) {
-                                serverReceivedMessages.add(inputLine);
-                                long endTime = System.currentTimeMillis();
-                                long totalTime = endTime - startTime;
-                                System.out.println(serverReceivedMessages);
-                                System.out.println("Received " + inputLine
-                                        + " @ " + totalTime);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } finally {
-                            try {
-                                clientSocket.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).start();
             }
         }).start();
     }
@@ -106,16 +74,23 @@ public class TestUtils {
     public void serverSendToClient(String message) {
         socketOut.println(message);
     }
+    
+    public PrintWriter generateSocketOut(){
+        return new PrintWriter(socketOut, true);
+    }
 
     public PrintWriter spawnClient(final String username, String whiteboard,
             final int portNo) throws UnknownHostException, IOException {
         String host = "localhost";
-
+        final int id = clientReceivedMessages.size();
+        
         // Connect to the socket
         System.out.println("attempting to connect to socket");
         final Socket socket = new Socket(host, portNo);
+        
         System.out.println(username + ": socket connection established");
-
+        clientReceivedMessages.add(new ArrayList<String>());
+                
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         final BufferedReader in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
@@ -132,7 +107,7 @@ public class TestUtils {
                     String inputLine;
                     while ((inputLine = in.readLine()) != null
                             && socket.isConnected()) {
-                        clientReceivedMessages.add(inputLine);
+                        clientReceivedMessages.get(id).add(inputLine);
                         System.out.println(username + ": Recieved message '"
                                 + inputLine + "'");
                     }
@@ -151,17 +126,18 @@ public class TestUtils {
             }
         }).start();
 
-        return out;
+        return generateSocketOut();
     }
 
     /**
      * dummyFrontEnd allows us to call the model's constructor without needing the class WhiteboardGUI.
      */
     public class dummyFrontEnd implements WhiteboardFrontEnd {
+        
         public void drawLineOnGUI(String strx1, String stry1, String strx2,
                 String stry2, String strwidth, String strr, String strg,
                 String strb, String user) {
-            clientReceivedMessages.add("line " + strx1 + " " + stry1 + " " + strx2 + " "
+            guiReceivedMessages.add("line "+strx1 + " " + stry1 + " " + strx2 + " "
                     + stry2 + " " + strwidth + " " + strr + " " + strg + " "
                     + strb + " " + user);
         }
@@ -188,9 +164,42 @@ public class TestUtils {
     public void sleep() {
         try {
             // Give the server Thread some time to process the message
-            Thread.sleep(300);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+    
+    private class serverListener implements Runnable {
+        @Override
+        public void run() {
+            String inputLine;
+            BufferedReader in = null;
+            
+            try {
+                in = new BufferedReader(new InputStreamReader(
+                        clientSocket.getInputStream()));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            try {
+                while ((inputLine = in.readLine()) != null) {
+                    serverReceivedMessages.add(inputLine);
+                    long endTime = System.currentTimeMillis();
+                    long totalTime = endTime - startTime;
+                    System.out.println(serverReceivedMessages);
+                    System.out.println("Received " + inputLine
+                            + " @ " + totalTime);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

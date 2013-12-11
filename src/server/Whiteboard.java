@@ -100,6 +100,7 @@ public class Whiteboard {
     
     /**
      * Adds a line to this whiteboard's history list and sends this line to all users connected to this whiteboard.
+     * Message needs to be a line message.
      * @param message String message encoding the line being added to this whiteboard
      */
     public void addLine(String message) {
