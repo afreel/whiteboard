@@ -3,10 +3,12 @@ package server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import client.WhiteboardGUI;
@@ -23,10 +25,12 @@ public class WhiteboardServer {
 
 	private final HashMap<String, Whiteboard> whiteboardMap;
 	private final List<Thread> threadList;
+	private final List<String> usernames;
 	
 	public WhiteboardServer() {
 		this.whiteboardMap = new HashMap<String, Whiteboard>() {{ put("1", new Whiteboard()); put("2", new Whiteboard()); }}; 
 		this.threadList = new ArrayList<Thread>();
+		this.usernames = new ArrayList<String>();
 	}
 	
 	/**
@@ -52,6 +56,7 @@ public class WhiteboardServer {
 					try {
 						boolean connectedToWhiteboard = false;
 						BufferedReader clientIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+						PrintWriter clientWriter = new PrintWriter(socket.getOutputStream(), true);
 						while (!connectedToWhiteboard) {
 							String inputLine = clientIn.readLine();
 							while (inputLine == null) { //Wait for the client to send a message
@@ -60,17 +65,23 @@ public class WhiteboardServer {
 							// Extract desired information from the client's message
 							String[] inputAsArray = inputLine.split(" ");
 							if (inputAsArray[0].equals("whiteboard")) {
-								String chosenWhiteboard = inputAsArray[1];
-								String userName = inputAsArray[3];
-								Client newClient = new Client(userName, socket);
-								System.out.println(chosenWhiteboard);
-								System.out.println(newClient);
-								whiteboardMap.get(chosenWhiteboard).addClient(newClient);
-								
-								Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard, newClient));
-								handleClient.start();
-								threadList.add(handleClient);
-								connectedToWhiteboard = true;
+								System.out.println(usernames.toString());
+								if(!usernames.contains(inputAsArray[3])){
+									String chosenWhiteboard = inputAsArray[1];
+									String username = inputAsArray[3];
+									Client newClient = new Client(username, clientWriter);
+									whiteboardMap.get(chosenWhiteboard).addClient(newClient);
+									usernames.add(username);
+									
+									Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard, newClient));
+									handleClient.start();
+									threadList.add(handleClient);
+									connectedToWhiteboard = true;
+								}
+								else {
+									System.out.println("username already taken");
+									clientWriter.println("usernameTaken");
+								}
 							}
 						}
 		
@@ -140,11 +151,15 @@ public class WhiteboardServer {
 				changeWhiteboardID(messageAsArray[1]);
 				whiteboardMap.get(whiteboardID).addClient(this.client); break;
 			case "disconnect": // Client has closed their window, and is now disconnected from the server
-				whiteboardMap.get(whiteboardID).removeClient(this.client); break;
+				whiteboardMap.get(whiteboardID).removeClient(this.client); 
+				Iterator<String> iter = usernames.iterator();
+				while(iter.hasNext()) {
+					if (iter.next().equals(this.client.getUsername())) {iter.remove(); break;}
+				}
+				break;
 			}
 			
 		}
-		
 		/**
 		 * mutator method to update our whiteboardID variable. For use when the client switches whiteboards.
 		 * @param newWhiteboard id of new whiteboard.
@@ -168,9 +183,9 @@ public class WhiteboardServer {
 		
 		thread.start();
 		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
 	}
 	
 }

@@ -13,9 +13,9 @@ public class Client {
 	 * @param username user's chosen username
 	 * @throws IOException if error occurs while retrieving user's output stream
 	 */
-	public Client(String username, Socket socket) throws IOException {
+	public Client(String username, PrintWriter printWriter) throws IOException {
 		this.username = username;
-		this.printWriter = new PrintWriter(socket.getOutputStream(), true);
+		this.printWriter = printWriter;
 	}
 	
 	/**
@@ -31,6 +31,7 @@ public class Client {
 	 * @param message message to be sent
 	 */
 	public void sendMessage(String message) {
+		System.out.println(message);
 		printWriter.println(message);
 	}
 }

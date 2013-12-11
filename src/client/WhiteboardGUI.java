@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -39,6 +38,8 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     // image where the user's drawing is stored
     private Image drawingBuffer;
     
+    private boolean drawing = true; //used to track if user is currently in draw or erase mode
+    
     private JColorChooser palette;
     
 	private String username = "[guest]"; //default username to "guest"
@@ -46,13 +47,21 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     private String ip = "localhost"; //default IP address to be localhost
     private int port = 4444; //default Port # is 4444
     
-    boolean connectedToServer = false; //initially not connected to server
+    private boolean connectedToServer = false; //initially not connected to server
     
     private TopButtonBar topbar;
     private BottomButtonBar bottombar;
     private UsersBar usersbar;
     
     private WhiteboardModel model;
+    
+    private String usernameTakenImageLoc = "./././images/UsernameTakenImage.bmp";
+    private String welcomeImageLoc = "./././images/WelcomeImage.bmp";
+    private String connectedToServerImageLoc = "./././images/ConnectedToServerImage.bmp";
+    
+    private boolean usernameAccepted = false; // for use in calls to WhiteboardModel#connectToWhiteboard from joinBoard(). True if username has
+    										  // already been accepted by the server as unique; false otherwise. 
+   
     /**
      * Make a canvas.
      * @param width width in pixels
@@ -74,6 +83,23 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
         // works *after* this canvas has been added to a window.  Have to
         // wait until paintComponent() is first called.
         
+        topbar.eraser.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			if (topbar.eraser.isSelected()) {
+    				drawing = false;
+    				topbar.imageLabel.setIcon(topbar.eraseIcon);
+    				topbar.revalidate();
+    				topbar.repaint();
+    			}
+    			else {
+    				drawing = true;
+    				topbar.imageLabel.setIcon(topbar.drawIcon);
+    				topbar.revalidate();
+    				topbar.repaint();
+    			}
+    		}
+    	});
+        
     	topbar.accessPalette.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			togglePalette();
@@ -86,15 +112,14 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     		}
     	});
     	
-//    	topbar.revert.addActionListener(new ActionListener() {
-//    		public void actionPerformed(ActionEvent event) {
-//    			revertToLastBMP();
-//    		}
-//    	});  
-    	
     	bottombar.inputName.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
-    			connect();
+    			try {
+					joinBoard();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     		}
     	});
     	
@@ -130,14 +155,22 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     		}
     	});
     	
+    	bottombar.joinBoard.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			try {
+					joinBoard();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	});
+    	loadWelcomeImage();
     	model = new WhiteboardModel(this);
     }
     
 
-    public void connect() {
-    	if (bottombar.inputName.getText().length() > 0) {
-			username = bottombar.inputName.getText();	
-		}
+    private void connect() {
     	if (bottombar.inputIP.getText().length() > 0) {
     		ip = bottombar.inputIP.getText();
 		}
@@ -149,23 +182,58 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 				model.connectToServer(ip, port);
 				connectedToServer = true;
 			}
-			model.connectToWhiteBoard(whiteboard, username);
-			bottombar.remove(bottombar.inputName);
-			bottombar.remove(bottombar.inputIP);
-			bottombar.remove(bottombar.inputPort);
-			bottombar.remove(bottombar.name);
-			bottombar.remove(bottombar.ip);
-			bottombar.remove(bottombar.port);
-			bottombar.boardMenu.setText("Board " + whiteboard);
+			bottombar.removeAll();
+			bottombar.add(bottombar.name);
+			bottombar.add(bottombar.inputName);
+			bottombar.add(bottombar.boardMenuBar);
+			bottombar.add(bottombar.joinBoard);
+			bottombar.revalidate();
 			bottombar.repaint();
+        	loadConnectedToServerImage();
 		}
 		catch(Exception e) {
 			System.out.println("Could not connect to Server. Invalid port or IP address");
 		}
 
     }
+
+    public void loadImage(String imageLoc) {
+        try {
+            drawingBuffer = ImageIO.read(new File(imageLoc));
+            this.repaint();
+    } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to load image @ " + imageLoc + " Please ensure that all files were downloaded correctly");
+    }
+    }
     
-    public void saveBMP() {
+    public void loadWelcomeImage() {
+    	loadImage(welcomeImageLoc);
+    }
+    
+    public void loadConnectedToServerImage() {
+    	loadImage(connectedToServerImageLoc);
+    }
+    
+    public void loadUsernameTakenImage() {
+    	loadImage(usernameTakenImageLoc);
+    }
+    public void joinBoard() throws IOException {
+    	fillWithWhite();
+    	if (bottombar.inputName.getText().length() > 0) {
+			username = bottombar.inputName.getText();	
+		}
+    	if (model.connectToWhiteBoard(whiteboard, username, usernameAccepted)) {
+        	usernameAccepted = true;
+    		bottombar.boardMenu.setText("Board " + whiteboard);
+        	bottombar.remove(bottombar.name);
+        	bottombar.remove(bottombar.inputName);
+        	bottombar.revalidate();
+        	bottombar.repaint();
+    	};
+    }
+    
+    private void saveBMP() {
     	BufferedImage bi = (BufferedImage) drawingBuffer;
     	try {
 			ImageIO.write(bi, "BMP", new File("c:\\CanvasImage.BMP"));
@@ -176,8 +244,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 		}
     }
     
-    public void togglePalette() {
-    	
+    private void togglePalette() {
     	if (topbar.accessPalette.isSelected()) {
     		this.add(palette);
     	}
@@ -215,7 +282,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     /*
      * Make the drawing buffer entirely white.
      */
-    public void fillWithWhite() {
+    private void fillWithWhite() {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
 
         g.setColor(Color.WHITE);
@@ -264,7 +331,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
      * pixels relative to the upper-left corner of the drawing buffer.
      */
     private void drawLocalLineSegment(int x1, int y1, int x2, int y2, Color color) {        
-        int drawWidth = 5; //TODO: Implement changeable width
         model.drawLineOnServer(x1, y1, x2, y2, topbar.strokeSlider.getValue(), color.getRed(), color.getGreen(), color.getBlue());
     }
     
@@ -293,7 +359,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
      * @param user user connected
      */
     public void addNewUser(String user) {
-    	usersbar.addNewUser(user, false); //
+    	usersbar.addNewUser(user, false); 
     }
     
     /**
@@ -338,11 +404,11 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
             int x = e.getX();
             int y = e.getY();
             if (connectedToServer) {
-            	if (topbar.eraser.isSelected()){
-                	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
+            	if (drawing){
+            		drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
                 }
                 else{
-                	drawLocalLineSegment(lastX, lastY, x, y, palette.getColor());
+                	drawLocalLineSegment(lastX, lastY, x, y, Color.WHITE);
                 }
                 lastX = x;
                 lastY = y;
@@ -360,6 +426,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     public WhiteboardModel getModel(){
         return this.model;
     }
+    
     /*
      * Main program. Make a window containing a Canvas.
      */
@@ -376,7 +443,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
                 
-
                 final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600); //18.217.1.147
                 
                 window.add(canvas, BorderLayout.CENTER);

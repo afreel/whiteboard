@@ -52,9 +52,7 @@ public class WhiteboardModel {
         // Store the input stream of the server
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        // Have a thread constantly listen for server messages
-        new Thread(new serverListener()).start();
-    }
+     }
 
     /**
      * Sends a message through the output stream to the server
@@ -78,10 +76,34 @@ public class WhiteboardModel {
      *            a string containing their ID number
      * @param username
      *            a string of any characters representing the users username.
+     * @param usernameConfirmed
+     * 			  a boolean indicating whether or not it is necessary to listen for a server response here. If a client's username
+     * 			  has already been confirmed as unique, then we need not listen for a server response and may return true.
+     * @throws IOException 
+     * 			  if an IO error occurs on retrieving the BufferedReader instance
+     * @returns true 
+     * 			   if the client's submitted username is accepted as unique, or has already been accepted as so. 
+     * 			false 
+     * 			   if another user is connected to the server with the same username.
      */
-    public void connectToWhiteBoard(String whiteboard, String username) {
+    public boolean connectToWhiteBoard(String whiteboard, String username, boolean usernameConfirmed) throws IOException {
         sendMessageToServer("whiteboard " + whiteboard + " username "
                 + username);
+        if (usernameConfirmed) {return true;} // If the client's username has already been accepted, then we don't want to listen to server here,
+        else{								  // as that is already being handled by a serverListener
+            BufferedReader inReader = new BufferedReader(in);
+            String inputLine = inReader.readLine();
+            while (inputLine == null){inputLine = inReader.readLine();};
+            if (inputLine.equals("usernameTaken")) {
+            	gui.loadUsernameTakenImage();
+            	return false;
+            }
+            else {
+            	handleMessage(inputLine);
+            	new Thread(new serverListener()).start(); // Have a thread constantly listen for server messages
+            }
+            return true;
+        }
     }
 
     /**
@@ -146,7 +168,7 @@ public class WhiteboardModel {
      */
     private void handleMessage(String message) {
         // Separate the message to get each argument in the message:
-        final String[] messageAsArray = message.split(" ");
+    	final String[] messageAsArray = message.split(" ");
 
         switch (messageAsArray[0]) {
 
@@ -174,14 +196,6 @@ public class WhiteboardModel {
             });
             break;
 
-        case "fillWhite":
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    gui.fillWithWhite();
-                }
-            });
-            break;
-
         case "removeUser":
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -189,6 +203,7 @@ public class WhiteboardModel {
                 }
             });
             break;
+          
         }
     }
 
@@ -204,7 +219,8 @@ public class WhiteboardModel {
             try {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    handleMessage(inputLine);
+        			System.out.println("Client got message " + inputLine);
+                	handleMessage(inputLine);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

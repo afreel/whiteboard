@@ -3,7 +3,16 @@ whiteboard
 
 Collaborative Whiteboard
 
-This software will allow users to set up a server hosting several Windows Paint look-like "whiteboard", 
+This software allows users to set up a server hosting several Windows Paint look-like "whiteboard", 
 and spawn clients that can connect to said server simultaneously and draw on it. 
 
-It should also allow to connect to a non-local server hosted by some other user of this same software.
+It also allows users to connect to a non-local server hosted by some other user of this same software.
+
+To begin the server, run WhiteboardServer.java
+To then begin a client, run WhiteboardGUI.java
+
+All interaction with this software takes place in the GUI.  Upon opening the GUI, one can specify the IP Address and Port number of the server to connect to, and then click the "Connect" button to attempt to connect.  If this is a valid IP and Port, then the user will be connnected and prompted to enter a username, pick a board, join, and begin using their chosen interactive whiteboard!
+
+Enjoy,
+
+Michael Handley, Austin Freel, Johannes Norheim
