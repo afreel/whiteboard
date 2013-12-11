@@ -124,7 +124,7 @@ public class WhiteboardServer {
 				BufferedReader clientIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				
 				String inputLine = clientIn.readLine();
-				while(true){
+				while(true) {
 					while (inputLine == null) {
 						inputLine = clientIn.readLine();
 					}
@@ -182,10 +182,10 @@ public class WhiteboardServer {
 		});
 		
 		thread.start();
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
+	//	WhiteboardGUI.main(new String[]{});
+//		WhiteboardGUI.main(new String[]{});
+//		WhiteboardGUI.main(new String[]{});
+//		WhiteboardGUI.main(new String[]{});
 	}
 	
 }
