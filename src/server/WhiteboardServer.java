@@ -28,7 +28,8 @@ public class WhiteboardServer {
 	private final List<String> usernames;
 	
 	public WhiteboardServer() {
-		this.whiteboardMap = new HashMap<String, Whiteboard>() {{ put("1", new Whiteboard()); put("2", new Whiteboard()); }}; 
+		this.whiteboardMap = new HashMap<String, Whiteboard>() {{ put("1", new Whiteboard()); put("2", new Whiteboard());
+							put("3", new Whiteboard()); put("4", new Whiteboard()); put("5", new Whiteboard());}};
 		this.threadList = new ArrayList<Thread>();
 		this.usernames = new ArrayList<String>();
 	}

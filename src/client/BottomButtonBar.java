@@ -26,6 +26,9 @@ public class BottomButtonBar extends JPanel {
     public JMenu boardMenu;
     public JMenuItem board1;
     public JMenuItem board2;
+    public JMenuItem board3;
+    public JMenuItem board4;
+    public JMenuItem board5;
     
     public JButton connect;
     public JButton joinBoard;
@@ -46,8 +49,14 @@ public class BottomButtonBar extends JPanel {
         
         board1 = new JMenuItem("Board 1");
         board2 = new JMenuItem("Board 2");
+        board3 = new JMenuItem("Board 3");
+        board4 = new JMenuItem("Board 4");
+        board5 = new JMenuItem("Board 5");
         boardMenu.add(board1);
         boardMenu.add(board2);
+        boardMenu.add(board3);
+        boardMenu.add(board4);
+        boardMenu.add(board5);
         
         boardMenuBar.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         

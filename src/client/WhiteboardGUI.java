@@ -149,6 +149,27 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     		}
     	});
     	
+    	bottombar.board3.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			whiteboard = "3";
+    			bottombar.boardMenu.setText(bottombar.board3.getText());
+    		}
+    	});
+    	
+    	bottombar.board4.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			whiteboard = "4";
+    			bottombar.boardMenu.setText(bottombar.board4.getText());
+    		}
+    	});
+    	
+    	bottombar.board5.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+    			whiteboard = "5";
+    			bottombar.boardMenu.setText(bottombar.board5.getText());
+    		}
+    	});
+    	
     	bottombar.connect.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
     			connect();

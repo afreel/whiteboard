@@ -94,8 +94,7 @@ public class TestUtils {
         System.out.println(username + ": socket connection established");
 
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        final BufferedReader in = new BufferedReader(new InputStreamReader(
-                socket.getInputStream()));
+        final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         // Tell the server we want to connect to a specific whiteboard
         out.println("whiteboard " + whiteboard + " username " + username);
