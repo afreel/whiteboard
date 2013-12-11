@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.net.Socket;
-
+import testing.TestUtils;
 import org.junit.Test;
 
 /*TESTING STRATEGY:
@@ -28,53 +28,60 @@ public class WhiteboardTest {
 
 	@Test
 	public void addClientBasicTest() {
-		Whiteboard board = new Whiteboard();
 		try {
-			Client c = new Client("Test", new Socket());
+			TestUtils.startServer(4444);
+			Whiteboard board = new Whiteboard();
+			Client c = new Client("Test", TestUtils.spawnClient("Test", "1", 4444));
 			board.addClient(c);
 			assertEquals(board.getClientsTesting().get(0), c);
-		} catch (IOException e) {
-			e.printStackTrace();
+			TestUtils.killServer();
 		}
+		catch (IOException e1) {}
 	}
 	
 	@Test
 	public void addClonedClientTest() {
-		Whiteboard board = new Whiteboard();
 		try {
-			Client c1 = new Client("Joe", new Socket());
-			Client c2 = new Client("Joe", new Socket());
+			TestUtils.startServer(1234);
+			Whiteboard board = new Whiteboard();
+			Client c1 = new Client("Joe", TestUtils.spawnClient("Test", "1", 1234));
+			Client c2 = new Client("Joe", TestUtils.spawnClient("Test", "1", 1234));
 			board.addClient(c1);
 			board.addClient(c2);
 			assertEquals(board.getClientsTesting().get(0), c1);
 			assertEquals(board.getClientsTesting().get(1), c2);
+			TestUtils.killServer();
 		} catch (IOException e) {}
 	}
 	
 	@Test
 	public void removeClientBasicTest() {
-		Whiteboard board = new Whiteboard();
 		try {
-			Client c1 = new Client("Mike", new Socket());
-			Client c2 = new Client("Austin", new Socket());
+			TestUtils.startServer(3000);
+			Whiteboard board = new Whiteboard();
+			Client c1 = new Client("Mike", TestUtils.spawnClient("Test", "1", 3000));
+			Client c2 = new Client("Austin", TestUtils.spawnClient("Test", "1", 3000));
 			board.addClient(c1);
 			board.addClient(c2);
 			board.removeClient(c1);
 			assertEquals(board.getClientsTesting().size(), 1);
 			assertEquals(board.getClientsTesting().get(0), c2);
+			TestUtils.killServer();
 		} catch (IOException e) {}
 	}
 	
 	@Test
 	public void removeNonexistentClientTest() {
-		Whiteboard board = new Whiteboard();
 		try {
-			Client c1 = new Client("Mike", new Socket());
-			Client c2 = new Client("Austin", new Socket());
+			TestUtils.startServer(3333);
+			Whiteboard board = new Whiteboard();
+			Client c1 = new Client("Johannes", TestUtils.spawnClient("Test", "1", 3333));
+			Client c2 = new Client("Joe", TestUtils.spawnClient("Test", "1", 3333));
 			board.addClient(c1);
 			board.removeClient(c2);
-			assertEquals(board.getClientsTesting().size(), 2);
+			assertEquals(board.getClientsTesting().size(), 1);
 			assertEquals(board.getClientsTesting().get(0), c1);
+			TestUtils.killServer();
 		} catch (IOException e) {}
 	}
 	
