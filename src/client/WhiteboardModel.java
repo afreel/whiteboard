@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 /**
  * WhiteboardModel is the back-end of the Whiteboard on the client side. It is
  * responsible for connecting the client with the server and listening for
@@ -178,7 +180,7 @@ public class WhiteboardModel {
     private void handleMessage(String message) {
         // Separate the message to get each argument in the message:
     	final String[] messageAsArray = message.split(" ");
-
+    	
         switch (messageAsArray[0]) {
 
         case "users":
@@ -194,7 +196,7 @@ public class WhiteboardModel {
             break;
 
         case "line":
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     gui.drawLineOnGUI(messageAsArray[1], messageAsArray[2],
                             messageAsArray[3], messageAsArray[4],

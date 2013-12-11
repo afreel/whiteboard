@@ -62,7 +62,7 @@ public class Whiteboard {
     }
     
     /**
-     * Remove a client from the whiteboard and informs all clients connected to this whiteboard of the removal.
+     * Removes a client from the whiteboard and informs all clients connected to this whiteboard of the removal.
      * @param client client to be removed from this whiteboard
      */
     public void removeClient(Client client) {
