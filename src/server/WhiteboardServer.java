@@ -18,7 +18,7 @@ import client.WhiteboardGUI;
  * Main server class. An instance of this class will listen on a specific port for new connecting clients.
  * For each connected client, it will spin a thread which waits for the client to select their whiteboard and username.
  * Once the client chooses a whiteboard and username, the client is associated with that whiteboard, and a new thread
- * is spun to listen for changes to they make to their local whiteboard.
+ * is spun to listen for changes the client makes to his local whiteboard.
  *
  */
 
