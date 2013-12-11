@@ -79,7 +79,9 @@ public class UsersBar extends JPanel{
 	 * @param b blue component of the color they are drawing in
 	 */
 	public void updateUserColor(String user, int r, int g, int b) {
-		usersLabelMap.get(user).setForeground(new Color(r,g,b));
+		if (usersLabelMap.get(user) != null){ //if user is still connected
+			usersLabelMap.get(user).setForeground(new Color(r,g,b));
+		}
 	}
 	
 }

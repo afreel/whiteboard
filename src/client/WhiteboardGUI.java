@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -115,7 +114,12 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	
     	bottombar.inputName.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
-    			connect();
+    			try {
+					joinBoard();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     		}
     	});
     	
@@ -215,6 +219,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	loadImage(usernameTakenImageLoc);
     }
     public void joinBoard() throws IOException {
+    	fillWithWhite();
     	if (bottombar.inputName.getText().length() > 0) {
 			username = bottombar.inputName.getText();	
 		}
@@ -225,7 +230,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
         	bottombar.remove(bottombar.inputName);
         	bottombar.revalidate();
         	bottombar.repaint();
-        	this.fillWithWhite();
     	};
     }
     
@@ -241,7 +245,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     }
     
     private void togglePalette() {
-    	
     	if (topbar.accessPalette.isSelected()) {
     		this.add(palette);
     	}
@@ -423,6 +426,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     public WhiteboardModel getModel(){
         return this.model;
     }
+    
     /*
      * Main program. Make a window containing a Canvas.
      */
@@ -439,7 +443,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
                 
-
                 final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600); //18.217.1.147
                 
                 window.add(canvas, BorderLayout.CENTER);

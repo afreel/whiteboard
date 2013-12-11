@@ -93,6 +93,7 @@ public class Whiteboard {
      */
 
     private void loadWhiteboard(Client client) {
+    	System.out.println("sending Hisotry");
     	synchronized (history) {
     		for (String message : history) {
     			client.sendMessage(message);
