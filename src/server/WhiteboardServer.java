@@ -185,7 +185,7 @@ public class WhiteboardServer {
 		WhiteboardGUI.main(new String[]{});
 		WhiteboardGUI.main(new String[]{});
 		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
 	}
 	
 }

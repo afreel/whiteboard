@@ -48,7 +48,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     private String ip = "localhost"; //default IP address to be localhost
     private int port = 4444; //default Port # is 4444
     
-    boolean connectedToServer = false; //initially not connected to server
+    private boolean connectedToServer = false; //initially not connected to server
     
     private TopButtonBar topbar;
     private BottomButtonBar bottombar;
@@ -166,7 +166,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     }
     
 
-    public void connect() {
+    private void connect() {
     	if (bottombar.inputIP.getText().length() > 0) {
     		ip = bottombar.inputIP.getText();
 		}
@@ -229,7 +229,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	};
     }
     
-    public void saveBMP() {
+    private void saveBMP() {
     	BufferedImage bi = (BufferedImage) drawingBuffer;
     	try {
 			ImageIO.write(bi, "BMP", new File("c:\\CanvasImage.BMP"));
@@ -240,7 +240,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 		}
     }
     
-    public void togglePalette() {
+    private void togglePalette() {
     	
     	if (topbar.accessPalette.isSelected()) {
     		this.add(palette);

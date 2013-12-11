@@ -24,7 +24,7 @@ public class Whiteboard {
     }
     
     /**
-     * Adds a client to the whiteboard
+     * Adds a client to the whiteboard and informs all clients connected to this whiteboard of the addition.
      * @param client client to be added to this whiteboard
      */
     public void addClient(Client client) {
@@ -39,7 +39,7 @@ public class Whiteboard {
     }
     
     /**
-     * Remove a client from the whiteboard
+     * Remove a client from the whiteboard and informs all clients connected to this whiteboard of the removal.
      * @param client client to be removed from this whiteboard
      */
     public void removeClient(Client client) {
@@ -64,7 +64,7 @@ public class Whiteboard {
     }
     
     /**
-     * Sends a String message to all current clients interacting with this whiteboard
+     * Sends a String message to all current clients interacting with this whiteboard.
      * @param message message to send
      */
     private void sendMessageToAll(String message) {
@@ -76,7 +76,7 @@ public class Whiteboard {
     }
     
     /**
-     * Adds a line to this whiteboard.
+     * Adds a line to this whiteboard's history list and sends this line to all users connected to this whiteboard.
      * @param message String message encoding the line being added to this whiteboard
      */
     public void addLine(String message) {
@@ -91,7 +91,8 @@ public class Whiteboard {
      * Note: this is used to allow a new client connecting to this board to have full access to the board's history.
      * @param client client to send history to
      */
-    private void sendHistory(Client client) {
+
+    private void loadWhiteboard(Client client) {
     	synchronized (history) {
     		for (String message : history) {
     			client.sendMessage(message);
@@ -99,11 +100,21 @@ public class Whiteboard {
     	}
     }
     
+    //METHODS BELOW ARE ONLY USED FOR TESTING
+    
     /**
-     * Sends the information of the whiteboard to the client.
-     * @param client client to send whiteboard info to
+     * TESTING
+     * @return list of whiteboard's clients
      */
-    private void loadWhiteboard(Client client) {
-    	this.sendHistory(client);
+    public List<Client> getClientsTesting() {
+    	return this.clients;
+    }
+    
+    /**
+     * TESTING
+     * @return list of whiteboard's line message history
+     */
+    public List<String> getHistoryTesting() {
+    	return this.history;
     }
 }
