@@ -108,6 +108,6 @@ public class WhiteboardModelTest {
         
         test.sleep();
         
-        assertEquals(serverSentMessages, test.clientReceivedMessages);
+        assertEquals(serverSentMessages, test.guiReceivedMessages);
     }
 }

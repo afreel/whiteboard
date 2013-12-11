@@ -101,7 +101,7 @@ public class WhiteboardModel {
 
         // If the client's user name has already been accepted, then we don't
         // want to start a new server listener, else we would be doubling up the
-        // messages sent to the client.
+        // messages sent to the client
         if (usernameConfirmed) {
             return true;
         } else {
