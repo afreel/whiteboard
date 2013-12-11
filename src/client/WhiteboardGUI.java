@@ -169,6 +169,9 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	model = new WhiteboardModel(this);
     }
     
+    public boolean isConnectedToServer() {
+    	return connectedToServer;
+    }
 
     private void connect() {
     	if (bottombar.inputIP.getText().length() > 0) {
@@ -453,7 +456,9 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
                 window.pack();
                 window.addWindowListener(new WindowAdapter() {
                 	public void windowClosing(WindowEvent e) {
-                		canvas.model.disconnectFromServer();
+                		if (canvas.isConnectedToServer()) {
+                			canvas.model.disconnectFromServer();
+                		}
                 	}
                 });
                 window.setVisible(true);
