@@ -8,10 +8,11 @@ public interface WhiteboardFrontEnd {
             String stry2, String strwidth, String strr, String strg,
             String strb, String user);
     
-    public void fillWithWhite();
     public void addNewUser(String user);
     public void removeUser(String user);
 
     public void loadGuiUsers(List<String> usersList);
-    
+    public void loadUsernameTakenImage();
+
+	public void loadConnectedToServerImage();
 }

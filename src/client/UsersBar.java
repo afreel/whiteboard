@@ -61,7 +61,6 @@ public class UsersBar extends JPanel{
 	 * @param user name of disconnected user
 	 */
 	public void removeUser(String user) {
-		
 		this.remove(usersLabelMap.get(user));
 		Iterator<Entry<String, JLabel>> iter = usersLabelMap.entrySet().iterator();
 		while (iter.hasNext()) {

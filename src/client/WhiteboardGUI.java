@@ -55,6 +55,14 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     private UsersBar usersbar;
     
     private WhiteboardModel model;
+    
+    private String usernameTakenImageLoc = "./././images/UsernameTakenImage.bmp";
+    private String welcomeImageLoc = "./././images/WelcomeImage.bmp";
+    private String connectedToServerImageLoc = "./././images/ConnectedToServerImage.bmp";
+    
+    private boolean usernameAccepted = false; // for use in calls to WhiteboardModel#connectToWhiteboard from joinBoard(). True if username has
+    										  // already been accepted by the server as unique; false otherwise. 
+   
     /**
      * Make a canvas.
      * @param width width in pixels
@@ -145,10 +153,15 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	
     	bottombar.joinBoard.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent event) {
-    			joinBoard();
+    			try {
+					joinBoard();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     		}
     	});
-    	
+    	loadWelcomeImage();
     	model = new WhiteboardModel(this);
     }
     
@@ -172,23 +185,48 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 			bottombar.add(bottombar.joinBoard);
 			bottombar.revalidate();
 			bottombar.repaint();
+        	loadConnectedToServerImage();
 		}
 		catch(Exception e) {
 			System.out.println("Could not connect to Server. Invalid port or IP address");
 		}
 
     }
+
+    public void loadImage(String imageLoc) {
+        try {
+            drawingBuffer = ImageIO.read(new File(imageLoc));
+            this.repaint();
+    } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to load image @ " + imageLoc + " Please ensure that all files were downloaded correctly");
+    }
+    }
     
-    public void joinBoard() {
+    public void loadWelcomeImage() {
+    	loadImage(welcomeImageLoc);
+    }
+    
+    public void loadConnectedToServerImage() {
+    	loadImage(connectedToServerImageLoc);
+    }
+    
+    public void loadUsernameTakenImage() {
+    	loadImage(usernameTakenImageLoc);
+    }
+    public void joinBoard() throws IOException {
     	if (bottombar.inputName.getText().length() > 0) {
 			username = bottombar.inputName.getText();	
 		}
-    	model.connectToWhiteBoard(whiteboard, username);
-    	bottombar.boardMenu.setText("Board " + whiteboard);
-    	bottombar.remove(bottombar.name);
-    	bottombar.remove(bottombar.inputName);
-    	bottombar.revalidate();
-    	bottombar.repaint();
+    	if (model.connectToWhiteBoard(whiteboard, username, usernameAccepted)) {
+        	usernameAccepted = true;
+    		bottombar.boardMenu.setText("Board " + whiteboard);
+        	bottombar.remove(bottombar.name);
+        	bottombar.remove(bottombar.inputName);
+        	bottombar.revalidate();
+        	bottombar.repaint();
+        	this.fillWithWhite();
+    	};
     }
     
     public void saveBMP() {
@@ -241,7 +279,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     /*
      * Make the drawing buffer entirely white.
      */
-    public void fillWithWhite() {
+    private void fillWithWhite() {
         Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
 
         g.setColor(Color.WHITE);
@@ -318,7 +356,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
      * @param user user connected
      */
     public void addNewUser(String user) {
-    	usersbar.addNewUser(user, false); //
+    	usersbar.addNewUser(user, false); 
     }
     
     /**

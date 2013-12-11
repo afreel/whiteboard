@@ -92,7 +92,6 @@ public class Whiteboard {
      * @param client client to send history to
      */
     private void sendHistory(Client client) {
-    	client.sendMessage("fillWhite");
     	synchronized (history) {
     		for (String message : history) {
     			client.sendMessage(message);
