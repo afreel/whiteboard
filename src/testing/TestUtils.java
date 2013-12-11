@@ -10,13 +10,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import client.WhiteboardFrontEnd;
+
 public class TestUtils {
-    private static boolean runserver = true;
-    private static boolean runclients = true;
-    private static Socket clientSocket;
-    private static List<PrintWriter> listOfPrinters = new ArrayList<PrintWriter>();
-    private static List<String> serverReceivedMessages = new ArrayList<String>();
-    private static final long startTime = System.currentTimeMillis();
+    private Socket clientSocket;
+    private List<String> serverReceivedMessages = new ArrayList<String>();
+    private final long startTime = System.currentTimeMillis();
 
     /**
      * Generates a server
@@ -24,7 +23,7 @@ public class TestUtils {
      * @throws IOException
      */
     @SuppressWarnings("resource")
-    public static void startServer(final int portNo) throws IOException {
+    public void startServer(final int portNo) throws IOException {
         new Thread(new Runnable() {
             public void run() {
                 ServerSocket serverSocket = null;
@@ -50,8 +49,7 @@ public class TestUtils {
                             e1.printStackTrace();
                         }
                         try {
-                            while ((inputLine = in.readLine()) != null
-                                    && runserver) {
+                            while ((inputLine = in.readLine()) != null) {
                                 serverReceivedMessages.add(inputLine);
                                 long endTime = System.currentTimeMillis();
                                 long totalTime = endTime - startTime;
@@ -74,17 +72,8 @@ public class TestUtils {
         }).start();
     }
 
-    public static void killServer() {
-        runserver = false;
-        
-     // We need the server to get a readline() before it will know it has to exit the while loop 
-     // The message we send could be anything(even empty!)
-        for(PrintWriter printer: listOfPrinters){
-            printer.println("goodbye");
-        }
-    }
 
-    public static PrintWriter spawnClient(final String username, String whiteboard, final int portNo)
+    public PrintWriter spawnClient(final String username, String whiteboard, final int portNo)
             throws UnknownHostException, IOException {
         String host = "localhost";
 
@@ -106,7 +95,7 @@ public class TestUtils {
                 // server.
                 try {
                     String inputLine;
-                    while ((inputLine = in.readLine()) != null && runclients && socket.isConnected()) {
+                    while ((inputLine = in.readLine()) != null && socket.isConnected()) {
                         System.out.println(username + ": Recieved message '"
                                 + inputLine + "'");
                     }
@@ -125,24 +114,35 @@ public class TestUtils {
             }
         }).start();
         
-        listOfPrinters.add(out);
         return out;
     }
+      
+    /**
+     * dummyFrontEnd allows us to call the models constructor without needing the class
+     * WhieboardGUI.
+     */
+    public class dummyFrontEnd implements WhiteboardFrontEnd {
+        public void drawLineOnGUI(String strx1, String stry1, String strx2,
+                String stry2, String strwidth, String strr, String strg,
+                String strb, String user) {
+        }
 
-    
-    public static void main(String[] args) throws IOException {
-        startServer(4444);
-        PrintWriter pw = spawnClient("user1", "1", 4444);
-        pw.println("hi there server");
-        sleep();
-        killServer();
-    }
-    
-    private static void sleep(){
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        public void fillWithWhite() {
+        }
+
+        public void addNewUser(String user) {
+        }
+
+        public void removeUser(String user) {
+        }
+
+        public void loadGuiUsers(List<String> usersList) {
+        }
+
+        public void loadUsernameTakenImage() {           
+        }
+
+        public void loadConnectedToServerImage() {
         }
     }
 }
