@@ -64,6 +64,9 @@ public class WhiteboardModel {
         out.println(message);
     }
 
+    /**
+     * Tells the server that the client is disconnecting
+     */
     public void disconnectFromServer() {
         sendMessageToServer("disconnect");
     }

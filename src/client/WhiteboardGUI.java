@@ -221,7 +221,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 
     }
 
-    public void loadImage(String imageLoc) {
+    private void loadImage(String imageLoc) {
         try {
             drawingBuffer = ImageIO.read(new File(imageLoc));
             this.repaint();
@@ -361,7 +361,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb, String user) {
         usersbar.updateUserColor(user, Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb));
     	Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-        
         
         g.setColor(new Color(Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb)));
         g.setStroke(new BasicStroke(Integer.parseInt(strwidth)));
