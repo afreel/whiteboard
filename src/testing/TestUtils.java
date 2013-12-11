@@ -15,7 +15,7 @@ public class TestUtils {
     private static boolean runserver = true;
     private static boolean runclients = true;
     private static Socket clientSocket;
-    private static PrintWriter out;
+    private static List<PrintWriter> listOfPrinters = new ArrayList<PrintWriter>();
     private static List<String> serverReceivedMessages = new ArrayList<String>();
     private static final long startTime = System.currentTimeMillis();
 
@@ -80,10 +80,12 @@ public class TestUtils {
         
      // We need the server to get a readline() before it will know it has to exit the while loop 
      // The message we send could be anything(even empty!)
-        sendMessage("goodbye"); 
+        for(PrintWriter printer: listOfPrinters){
+            printer.println("goodbye");
+        }
     }
 
-    public static Socket spawnClient(final String username, String whiteboard)
+    public static PrintWriter spawnClient(final String username, String whiteboard)
             throws UnknownHostException, IOException {
         String host = "localhost";
 
@@ -92,7 +94,7 @@ public class TestUtils {
         final Socket socket = new Socket(host, portNumber);
         System.out.println(username + ": socket connection established");
 
-        out = new PrintWriter(socket.getOutputStream(), true);
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         final BufferedReader in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
 
@@ -125,18 +127,15 @@ public class TestUtils {
             }
         }).start();
         
-        return clientSocket;
+        listOfPrinters.add(out);
+        return out;
     }
 
-    public static void sendMessage(String message) {
-        out.println(message);
-    }
     
     public static void main(String[] args) throws IOException {
         startServer();
-        Socket s = spawnClient("user1", "1");
-        sendMessage("");
-        sendMessage("");
+        PrintWriter pw = spawnClient("user1", "1");
+        pw.println("hi there server");
         sleep();
         killServer();
     }
