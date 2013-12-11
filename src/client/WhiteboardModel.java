@@ -2,6 +2,7 @@ package client;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,8 @@ public class WhiteboardModel {
      * @param port
      *            the port number
      * @throws IOException
-     *             if can't connect to the server
+     *             if can't acces the output or input stream of the server or
+     *             can't connect to the server
      */
     public void connectToServer(String host, int port) throws IOException {
         // Connecting to the server
