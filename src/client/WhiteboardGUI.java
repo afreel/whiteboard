@@ -190,7 +190,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	model = new WhiteboardModel(this);
     }
     
-    public boolean isConnectedToServer() {
+    private boolean isConnectedToServer() {
     	return connectedToServer;
     }
 
@@ -221,7 +221,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 
     }
 
-    public void loadImage(String imageLoc) {
+    private void loadImage(String imageLoc) {
         try {
             drawingBuffer = ImageIO.read(new File(imageLoc));
             this.repaint();
@@ -242,7 +242,8 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     public void loadUsernameTakenImage() {
     	loadImage(usernameTakenImageLoc);
     }
-    public void joinBoard() throws IOException {
+    
+    private void joinBoard() throws IOException {
     	fillWithWhite();
     	if (bottombar.inputName.getText().length() > 0) {
 			username = bottombar.inputName.getText();	
@@ -318,39 +319,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     }
     
     /*
-     * Draw a happy smile on the drawing buffer.
-     */
-    private void drawSmile() {
-        final Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-
-        // all positions and sizes below are in pixels
-        final Rectangle smileBox = new Rectangle(20, 20, 100, 100); // x, y, width, height
-        final Point smileCenter = new Point(smileBox.x + smileBox.width/2, smileBox.y + smileBox.height/2);
-        final int smileStrokeWidth = 3;
-        final Dimension eyeSize = new Dimension(9, 9);
-        final Dimension eyeOffset = new Dimension(smileBox.width/6, smileBox.height/6);
-        
-        g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(smileStrokeWidth));
-        
-        // draw the smile -- an arc inscribed in smileBox, starting at -30 degrees (southeast)
-        // and covering 120 degrees
-        g.drawArc(smileBox.x, smileBox.y, smileBox.width, smileBox.height, -30, -120);
-        
-        // draw some eyes to make it look like a smile rather than an arc
-        for (int side: new int[] { -1, 1 }) {
-            g.fillOval(smileCenter.x + side * eyeOffset.width - eyeSize.width/2,
-                       smileCenter.y - eyeOffset.height - eyeSize.width/2,
-                       eyeSize.width,
-                       eyeSize.height);
-        }
-        
-        // IMPORTANT!  every time we draw on the internal drawing buffer, we
-        // have to notify Swing to repaint this component on the screen.
-        this.repaint();
-    }
-    
-    /*
      * Draw a line between two points (x1, y1) and (x2, y2), specified in
      * pixels relative to the upper-left corner of the drawing buffer.
      */
@@ -361,7 +329,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     public void drawLineOnGUI(String strx1, String stry1, String strx2, String stry2, String strwidth, String strr, String strg, String strb, String user) {
         usersbar.updateUserColor(user, Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb));
     	Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-        
         
         g.setColor(new Color(Integer.parseInt(strr), Integer.parseInt(strg), Integer.parseInt(strb)));
         g.setStroke(new BasicStroke(Integer.parseInt(strwidth)));
