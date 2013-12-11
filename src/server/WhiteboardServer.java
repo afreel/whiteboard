@@ -59,7 +59,7 @@ public class WhiteboardServer {
 				public void run() {
 					
 					try {
-						boolean connectedToWhiteboard = false;
+						boolean connectedToWhiteboard = false; // client has not yet successfully connected to a whiteboard
 						BufferedReader clientIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						PrintWriter clientWriter = new PrintWriter(socket.getOutputStream(), true);
 						while (!connectedToWhiteboard) {
@@ -80,7 +80,7 @@ public class WhiteboardServer {
 									
 									Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard, newClient));
 									handleClient.start();
-									connectedToWhiteboard = true;
+									connectedToWhiteboard = true; // client has now connected to a whiteboard
 								}
 								else {
 									System.out.println("username already taken");
