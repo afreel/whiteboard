@@ -85,8 +85,7 @@ public class WhiteboardModel {
      * 			   if another user is connected to the server with the same username.
      */
     public boolean connectToWhiteBoard(String whiteboard, String username, boolean usernameConfirmed) throws IOException {
-        sendMessageToServer("whiteboard " + whiteboard + " username "
-                + username);
+        sendMessageToServer("whiteboard " + whiteboard + " username " + username);
         if (usernameConfirmed) {return true;} // If the client's username has already been accepted, then we don't want to listen to server here,
         else{								  // as that is already being handled by a serverListener
             BufferedReader inReader = new BufferedReader(in);

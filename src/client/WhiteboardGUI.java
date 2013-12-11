@@ -443,7 +443,7 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
                 BottomButtonBar bottombar = new BottomButtonBar();
                 UsersBar usersbar = new UsersBar(new ArrayList<String>());
                 
-                final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600); //18.217.1.147
+                final WhiteboardGUI canvas = new WhiteboardGUI(topbar, bottombar, usersbar, 900, 600);
                 
                 window.add(canvas, BorderLayout.CENTER);
                 window.add(topbar, BorderLayout.NORTH);
