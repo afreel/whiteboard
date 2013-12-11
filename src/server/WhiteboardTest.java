@@ -34,7 +34,6 @@ public class WhiteboardTest {
 			Client c = new Client("Test", TestUtils.spawnClient("Test", "1", 4444));
 			board.addClient(c);
 			assertEquals(board.getClientsTesting().get(0), c);
-			TestUtils.killServer();
 		}
 		catch (IOException e1) {}
 	}
@@ -50,7 +49,6 @@ public class WhiteboardTest {
 			board.addClient(c2);
 			assertEquals(board.getClientsTesting().get(0), c1);
 			assertEquals(board.getClientsTesting().get(1), c2);
-			TestUtils.killServer();
 		} catch (IOException e) {}
 	}
 	
@@ -66,7 +64,6 @@ public class WhiteboardTest {
 			board.removeClient(c1);
 			assertEquals(board.getClientsTesting().size(), 1);
 			assertEquals(board.getClientsTesting().get(0), c2);
-			TestUtils.killServer();
 		} catch (IOException e) {}
 	}
 	
@@ -81,7 +78,6 @@ public class WhiteboardTest {
 			board.removeClient(c2);
 			assertEquals(board.getClientsTesting().size(), 1);
 			assertEquals(board.getClientsTesting().get(0), c1);
-			TestUtils.killServer();
 		} catch (IOException e) {}
 	}
 	
