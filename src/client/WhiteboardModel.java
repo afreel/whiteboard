@@ -12,6 +12,13 @@ import javax.swing.SwingUtilities;
  * WhiteboardModel is the back-end of the Whiteboard on the client side. It is
  * responsible for connecting the client with the server and listening for
  * server messages, and execute the expected behavior from the given message.
+ * 
+ * TESTING:
+ * disconnectFromServer() was tested manually by:
+ *  > connecting to an instance of WhiteboardServer from another computer
+ *  > closing client window and ensuring that the correct message was sent by using a print statement
+ *  > ensuring that client was removed from usersbar of those connected
+ *  > ensuring that a new user could use that disconnected user's username
  */
 public class WhiteboardModel {
     private Socket socket;

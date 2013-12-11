@@ -149,8 +149,7 @@ public class TestUtils {
     }
 
     /**
-     * dummyFrontEnd allows us to call the models constructor without needing
-     * the class WhieboardGUI.
+     * dummyFrontEnd allows us to call the model's constructor without needing the class WhiteboardGUI.
      */
     public class dummyFrontEnd implements WhiteboardFrontEnd {
         

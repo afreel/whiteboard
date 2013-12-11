@@ -1,12 +1,22 @@
-Place your team contract and design documents in this directory.
+whiteboard
+==========
 
-The files in this directory should be:
-- team-contract.pdf
-- design-milestone.pdf
-- design-revised.pdf
+Collaborative Whiteboard
 
-If you add any other documents to this directory, please add the filenames to
-the above list.
+This software allows users to set up a server hosting several Windows Paint look-like "whiteboard", 
+and spawn clients that can connect to said server simultaneously and draw on it. 
+
+It also allows users to connect to a non-local server hosted by some other user of this same software.
+
+To begin the server, run WhiteboardServer.java
+To then begin a client, run WhiteboardGUI.java
+
+All interaction with this software takes place in the GUI.  Upon opening the GUI, one can specify the IP Address and Port number of the server to connect to, and then click the "Connect" button to attempt to connect.  If this is a valid IP and Port, then the user will be connnected and prompted to enter a username, pick a board, join, and begin using their chosen interactive whiteboard!
+
+Enjoy,
+
+Austin Freel, Michael Handley, Johannes Norheim
+
 
 WhiteboardModel: disconnectFromServer() was tested manually by:
 					connecting to an instance of WhiteboardServer from another computer
@@ -35,7 +45,7 @@ Manual Tests:
   		- connectedToWhiteboard was set to true
   		- the client's GUI's BottomButtonBar updates by removing the field for username input 
 		- the client's GUI now displays the user's chosen whiteboard
-  - Once the client was connected to a whiteboard successfully
+ - Once the client was connected to a whiteboard successfully
   	- their name showed up in the usersBar at the right side of the GUI
   	- in the case of connected to an already populated whiteboad, the other users' usernames were also displayed
   	- when the client draws a line, WhiteboardModel gets a request to send a "line ... " message to the server
