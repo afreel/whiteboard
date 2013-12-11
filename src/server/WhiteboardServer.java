@@ -21,15 +21,20 @@ import client.WhiteboardGUI;
  * is spun to listen for changes to they make to their local whiteboard.
  *
  */
+
+/*
+ * Rep invariant:
+ *  - whiteboardMap != null
+ *  - whiteboardMap.size == 5
+ *  - usernames != null
+ */
 public class WhiteboardServer {
 
 	private final HashMap<String, Whiteboard> whiteboardMap;
-	private final List<Thread> threadList;
 	private final List<String> usernames;
 	
 	public WhiteboardServer() {
-		this.whiteboardMap = new HashMap<String, Whiteboard>() {{ put("1", new Whiteboard()); put("2", new Whiteboard()); }}; 
-		this.threadList = new ArrayList<Thread>();
+		this.whiteboardMap = new HashMap<String, Whiteboard>() {{ put("1", new Whiteboard()); put("2", new Whiteboard()); put("3", new Whiteboard()); put("4", new Whiteboard()); put("5", new Whiteboard());}}; 
 		this.usernames = new ArrayList<String>();
 	}
 	
@@ -75,7 +80,6 @@ public class WhiteboardServer {
 									
 									Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard, newClient));
 									handleClient.start();
-									threadList.add(handleClient);
 									connectedToWhiteboard = true;
 								}
 								else {

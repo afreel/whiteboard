@@ -5,11 +5,17 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Client {
-	private String username;
-	private PrintWriter printWriter;
+	private final String username;
+	private final PrintWriter printWriter;
+	
+	/*
+	 * Rep invariant:
+	 * - username, printWriter != null
+	 * - 
+	 */
 	
 	/**
-	 * 
+	 * Construct a Client object
 	 * @param username user's chosen username
 	 * @throws IOException if error occurs while retrieving user's output stream
 	 */
@@ -34,4 +40,5 @@ public class Client {
 		System.out.println(message);
 		printWriter.println(message);
 	}
+	
 }

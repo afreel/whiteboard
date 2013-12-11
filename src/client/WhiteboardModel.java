@@ -100,7 +100,7 @@ public class WhiteboardModel {
             }
             else {
             	handleMessage(inputLine);
-            	new Thread(new serverListener()).start(); // Have a thread constantly listen for server messages
+            	new Thread(new ServerListener()).start(); // Have a thread constantly listen for server messages
             }
             return true;
         }
@@ -211,7 +211,7 @@ public class WhiteboardModel {
      * serverListener is a functor that will be used for spinning a new Thread
      * listening for messages sent from the server over the socket.
      */
-    private class serverListener implements Runnable {
+    private class ServerListener implements Runnable {
         @Override
         public void run() {
             // Have a loop constantly checking for new messages from the
