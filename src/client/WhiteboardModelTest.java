@@ -46,20 +46,20 @@ public class WhiteboardModelTest {
      * server.
      */
 
-    private List<String> clientSentMessages = new ArrayList<String>();
-    private List<String> serverReceivedMessages = new ArrayList<String>();
-    private final long startTime = System.currentTimeMillis();
-    
+   
     @Test
     public void clientCorretlySendsDrawLineMessage() throws IOException {
+        int portNumber = 4444;
+        TestUtils test = new TestUtils();
+        
         // Start up a dummy server for all tests
-        new Thread(new dummyServer(4444)).start();
+        test.startServer(portNumber);
         System.out.println("Server started");
         
         // Generate a dummy front end we can associate with the model
         WhiteboardModel modelToTest = new WhiteboardModel(new dummyFrontEnd());
         
-        modelToTest.connectToServer("localhost", 4444);
+        modelToTest.connectToServer("localhost", portNumber);
 
         // Send a message to the server
         modelToTest.drawLineOnServer(100, 100, 200, 200, 5, 0, 0, 0);
@@ -179,6 +179,18 @@ public class WhiteboardModelTest {
         }
 
         public void loadGuiUsers(List<String> usersList) {
+        }
+
+        @Override
+        public void loadUsernameTakenImage() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void loadConnectedToServerImage() {
+            // TODO Auto-generated method stub
+            
         }
     }
 
