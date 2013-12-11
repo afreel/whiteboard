@@ -1,14 +1,7 @@
 package testing;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +35,8 @@ public class TestUtils {
     private PrintWriter socketOut;
     public List<String> serverReceivedMessages = new ArrayList<String>();
     public List<String> clientReceivedMessages = new ArrayList<String>();
+    public List<String> guiReceivedMessages = new ArrayList<String>();
+    
     private final long startTime = System.currentTimeMillis();
 
     /**
@@ -49,7 +44,6 @@ public class TestUtils {
      * 
      * @throws IOException
      */
-    @SuppressWarnings("resource")
     public void startServer(final int portNo) throws IOException {
         new Thread(new Runnable() {
             public void run() {
@@ -159,10 +153,11 @@ public class TestUtils {
      * the class WhieboardGUI.
      */
     public class dummyFrontEnd implements WhiteboardFrontEnd {
+        
         public void drawLineOnGUI(String strx1, String stry1, String strx2,
                 String stry2, String strwidth, String strr, String strg,
                 String strb, String user) {
-            clientReceivedMessages.add("line "+strx1 + " " + stry1 + " " + strx2 + " "
+            guiReceivedMessages.add("line "+strx1 + " " + stry1 + " " + strx2 + " "
                     + stry2 + " " + strwidth + " " + strr + " " + strg + " "
                     + strb + " " + user);
         }
