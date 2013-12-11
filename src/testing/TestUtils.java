@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestUtils {
-    private static final int portNumber = 4444;
     private static boolean runserver = true;
     private static boolean runclients = true;
     private static Socket clientSocket;
@@ -25,13 +24,13 @@ public class TestUtils {
      * @throws IOException
      */
     @SuppressWarnings("resource")
-    public static void startServer() throws IOException {
+    public static void startServer(final int portNo) throws IOException {
         new Thread(new Runnable() {
             public void run() {
                 ServerSocket serverSocket = null;
 
                 try {
-                    serverSocket = new ServerSocket(portNumber);
+                    serverSocket = new ServerSocket(portNo);
                     System.out.println("Started server");
                     clientSocket = serverSocket.accept();
                     System.out.println("Accepted a client");
@@ -85,13 +84,13 @@ public class TestUtils {
         }
     }
 
-    public static PrintWriter spawnClient(final String username, String whiteboard)
+    public static PrintWriter spawnClient(final String username, String whiteboard, final int portNo)
             throws UnknownHostException, IOException {
         String host = "localhost";
 
         // Connect to the socket
         System.out.println("attempting to connect to socket");
-        final Socket socket = new Socket(host, portNumber);
+        final Socket socket = new Socket(host, portNo);
         System.out.println(username + ": socket connection established");
 
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -133,8 +132,8 @@ public class TestUtils {
 
     
     public static void main(String[] args) throws IOException {
-        startServer();
-        PrintWriter pw = spawnClient("user1", "1");
+        startServer(4444);
+        PrintWriter pw = spawnClient("user1", "1", 4444);
         pw.println("hi there server");
         sleep();
         killServer();

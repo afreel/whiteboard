@@ -29,9 +29,9 @@ public class WhiteboardTest {
 	@Test
 	public void addClientBasicTest() {
 		try {
-			TestUtils.startServer();
+			TestUtils.startServer(4444);
 			Whiteboard board = new Whiteboard();
-			Client c = new Client("Test", TestUtils.spawnClient("Test", "1"));
+			Client c = new Client("Test", TestUtils.spawnClient("Test", "1", 4444));
 			board.addClient(c);
 			assertEquals(board.getClientsTesting().get(0), c);
 			TestUtils.killServer();
@@ -42,10 +42,10 @@ public class WhiteboardTest {
 	@Test
 	public void addClonedClientTest() {
 		try {
-			TestUtils.startServer();
+			TestUtils.startServer(1234);
 			Whiteboard board = new Whiteboard();
-			Client c1 = new Client("Joe", TestUtils.spawnClient("Test", "1"));
-			Client c2 = new Client("Joe", TestUtils.spawnClient("Test", "1"));
+			Client c1 = new Client("Joe", TestUtils.spawnClient("Test", "1", 1234));
+			Client c2 = new Client("Joe", TestUtils.spawnClient("Test", "1", 1234));
 			board.addClient(c1);
 			board.addClient(c2);
 			assertEquals(board.getClientsTesting().get(0), c1);
@@ -57,10 +57,10 @@ public class WhiteboardTest {
 	@Test
 	public void removeClientBasicTest() {
 		try {
-			TestUtils.startServer();
+			TestUtils.startServer(3000);
 			Whiteboard board = new Whiteboard();
-			Client c1 = new Client("Mike", TestUtils.spawnClient("Test", "1"));
-			Client c2 = new Client("Austin", TestUtils.spawnClient("Test", "1"));
+			Client c1 = new Client("Mike", TestUtils.spawnClient("Test", "1", 3000));
+			Client c2 = new Client("Austin", TestUtils.spawnClient("Test", "1", 3000));
 			board.addClient(c1);
 			board.addClient(c2);
 			board.removeClient(c1);
@@ -73,10 +73,10 @@ public class WhiteboardTest {
 	@Test
 	public void removeNonexistentClientTest() {
 		try {
-			TestUtils.startServer();
+			TestUtils.startServer(3333);
 			Whiteboard board = new Whiteboard();
-			Client c1 = new Client("Johannes", TestUtils.spawnClient("Test", "1"));
-			Client c2 = new Client("Joe", TestUtils.spawnClient("Test", "1"));
+			Client c1 = new Client("Johannes", TestUtils.spawnClient("Test", "1", 3333));
+			Client c2 = new Client("Joe", TestUtils.spawnClient("Test", "1", 3333));
 			board.addClient(c1);
 			board.removeClient(c2);
 			assertEquals(board.getClientsTesting().size(), 1);
