@@ -37,7 +37,6 @@ public class Client {
 	 * @param message message to be sent
 	 */
 	public void sendMessage(String message) {
-		System.out.println(message);
 		printWriter.println(message);
 	}
 	

@@ -37,7 +37,6 @@ public class Whiteboard {
 	
 	private final List<Client> clients; //list of clients currently using this whiteboard
 	private final List<String> history; //list of line draw messages sent to this whiteboard since its creation
-	private long startTime = System.currentTimeMillis();
 	
 	/**
      * Make a whiteboard.
@@ -53,16 +52,11 @@ public class Whiteboard {
      */
     public void addClient(Client client) {
     	synchronized (clients) {
-            long endTime = System.currentTimeMillis();
-            long totalTime = endTime - startTime;
-    		System.out.println("newUser " + client.getUsername()+" recieved @ "+totalTime);
-    		
+
             this.sendMessageToAll("newUser "+client.getUsername());
             
     		clients.add(client);
-    		System.out.println("--> Sending list of current users to client ["+ client.getUsername()+"]");
     		client.sendMessage(this.usersMessage());
-    		System.out.println("--> Sending history to client");
     		this.loadWhiteboard(client);
     	}
     }
@@ -123,7 +117,6 @@ public class Whiteboard {
      */
 
     private void loadWhiteboard(Client client) {
-    	System.out.println("sending Hisotry");
     	synchronized (history) {
     		for (String message : history) {
     			client.sendMessage(message);

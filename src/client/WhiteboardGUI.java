@@ -380,10 +380,8 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
     	BufferedImage bi = (BufferedImage) drawingBuffer;
     	try {
 			ImageIO.write(bi, "BMP", new File("c:\\CanvasImage.BMP"));
-			System.out.println("saved");
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("not saved");
 		}
     }
     
@@ -500,7 +498,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
          * When mouse button is pressed down, start drawing.
          */
         public void mousePressed(MouseEvent e) {
-            System.out.println(e.paramString());
         	lastX = e.getX();
             lastY = e.getY();
         }

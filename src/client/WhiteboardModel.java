@@ -145,7 +145,6 @@ public class WhiteboardModel {
                 inputLine = inReader.readLine();
             }
             ;
-            System.out.println(inReader);
 
             if (inputLine.equals("usernameTaken")) {
                 gui.loadUsernameTakenImage();
@@ -273,7 +272,6 @@ public class WhiteboardModel {
             try {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    System.out.println("Client got message " + inputLine);
                     handleMessage(inputLine);
                 }
             } catch (IOException e) {
