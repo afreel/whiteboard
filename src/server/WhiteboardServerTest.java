@@ -28,10 +28,7 @@ public class WhiteboardServerTest {
                 }
             }
         });
-        thread.start();
-        
-        //utils.spawnClient("Test", "1", 4500);
-        
+        thread.start();        
         
     }
 

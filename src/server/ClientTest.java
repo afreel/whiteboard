@@ -12,21 +12,23 @@ import org.junit.Test;
  * Tests our Client class
  *  @category no_didit
  */
-/*
- * TESTING STATEGY:
- * 
- * getUsername():
- * > Test that it will return the username of the client
- * 
- * sendMessage(String message):
- * > Test that we can send line messages to the client, and the client will receive it.
- * > Test that we can send new user messages to the client, and the client will receive it.
- * > Test that we can send user messages to the client, and that the client will successfully receive it.
- *  
- */
+
 
 public class ClientTest {
 
+	/*
+	 * TESTING STATEGY:
+	 * 
+	 * getUsername():
+	 * > Test that it will return the username of the client
+	 * 
+	 * sendMessage(String message):
+	 * > Test that we can send line messages to the client, and the client will receive it.
+	 * > Test that we can send new user messages to the client, and the client will receive it.
+	 * > Test that we can send user messages to the client, and that the client will successfully receive it.
+	 *  
+	 */
+	
 	@Test
     public void clientGetUsernameTest() {
         try {

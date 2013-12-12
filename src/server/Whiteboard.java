@@ -13,7 +13,6 @@ import java.util.List;
  *  all public methods are run through base tests in WhiteboardTest.java
  *  to fully test the Whiteboard class, we used manual tests
  *  
- *  @category no_didit
  */
 
 /* Rep invariant: 
