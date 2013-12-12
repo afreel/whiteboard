@@ -51,7 +51,6 @@ public class UsersBar extends JPanel{
 	 * 							 usersbar is immediately displayed.
 	 */
 	public void addNewUser(String user, boolean inloadUsersBarCall) {
-		System.out.println("Adding new user " + user);
 		JLabel j = new JLabel(user);
 		j.setForeground(new Color(150,150,150));
 		this.add(j);

@@ -83,7 +83,6 @@ public class WhiteboardServer {
 							// Extract desired information from the client's message
 							String[] inputAsArray = inputLine.split(" ");
 							if (inputAsArray[0].equals("whiteboard")) {
-								System.out.println(usernames.toString());
 								if(!usernames.contains(inputAsArray[3])){
 									String chosenWhiteboard = inputAsArray[1];
 									String username = inputAsArray[3];
@@ -96,7 +95,6 @@ public class WhiteboardServer {
 									connectedToWhiteboard = true; // client has now connected to a whiteboard
 								}
 								else {
-									System.out.println("username already taken");
 									clientWriter.println("usernameTaken");
 								}
 							}
@@ -145,7 +143,6 @@ public class WhiteboardServer {
 					while (inputLine == null) {
 						inputLine = clientIn.readLine();
 					}
-					System.out.println("Server Received message");
 					handleMessageFromClient(inputLine);
 					inputLine = clientIn.readLine();
 				}

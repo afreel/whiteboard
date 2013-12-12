@@ -37,7 +37,6 @@ public class TestUtils {
     public ArrayList<ArrayList<String>> clientReceivedMessages = new ArrayList<ArrayList<String>>();
     public List<String> guiReceivedMessages = new ArrayList<String>();
     
-    private final long startTime = System.currentTimeMillis();
 
     /**
      * Generates a server
@@ -51,12 +50,9 @@ public class TestUtils {
 
                 try {
                     serverSocket = new ServerSocket(portNo);
-                    System.out.println("Started server");
                     
                     while(true){
                         clientSocket = serverSocket.accept();
-                        System.out.println("Accepted a client");
-
                         socketOut = new PrintWriter(clientSocket.getOutputStream(),
                                 true);
                         
@@ -72,7 +68,6 @@ public class TestUtils {
     }
 
     public void serverSendToClient(String message) {
-        System.out.println("Sending "+message);
         socketOut.println(message);
     }
     
@@ -83,10 +78,8 @@ public class TestUtils {
         final int id = clientReceivedMessages.size();
         
         // Connect to the socket
-        System.out.println("attempting to connect to socket");
         final Socket socket = new Socket(host, portNo);
         
-        System.out.println(username + ": socket connection established");
         clientReceivedMessages.add(new ArrayList<String>());
                 
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -106,16 +99,12 @@ public class TestUtils {
                     while ((inputLine = in.readLine()) != null
                             && socket.isConnected()) {
                         clientReceivedMessages.get(id).add(inputLine);
-                        System.out.println(username + ": Recieved message '"
-                                + inputLine + "'");
                     }
                 } catch (IOException e) {
                     e.printStackTrace(); // but don't terminate server
                 } finally {
                     try {
                         // Close connection with server
-                        System.out.println(username
-                                + ": Closing connection with server");
                         socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -192,11 +181,6 @@ public class TestUtils {
             try {
                 while ((inputLine = in.readLine()) != null) {
                     serverReceivedMessages.add(inputLine);
-                    long endTime = System.currentTimeMillis();
-                    long totalTime = endTime - startTime;
-                    System.out.println(serverReceivedMessages);
-                    System.out.println("Received " + inputLine
-                            + " @ " + totalTime);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
