@@ -173,6 +173,11 @@ public class WhiteboardServer {
                     inputLine = clientIn.readLine();
                 }
             } catch (IOException e) {
+                try {
+                    socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 e.printStackTrace();
             }
         }
