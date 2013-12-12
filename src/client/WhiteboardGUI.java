@@ -32,6 +32,79 @@ import javax.swing.SwingUtilities;
 /**
  * Canvas represents a drawing surface that allows the user to draw
  * on it freehand, with the mouse.
+ * 
+ * TESTING:
+ * 
+ * 	GUI was tested with manual tests. As an overview, each listener/method was tested individually by connecting a client to a server
+ * 	and observing that every possible event triggered the expected visual result under differing circumstances. Tests
+ * 	were also done for pre-connection actions.  This strategy is documented in much more detail below:
+ * 
+ * 	Pre-Connection:
+ * 		> tested running WhiteboardGUI without a server running, and ensuring that no matter what inputs are put into the 
+ * 		  IP and Port fields, the board stays on the same screen and does not connect (tested explicitly with print lines)
+ * 		> loadWelcomeImage()
+ * 			-ensured the 'Welcome' image is displayed upon opening the GUI
+ * 		> before connecting, tested the case when a client still tries to draw to the board and ensured that no error was
+ * 		  thrown and no lines were in fact drawn locally
+ * 	Post-Connection:
+ * 		> eraser listener
+ * 			- in the case where we were previously drawing, the toggle button is now toggled on, the eraser icon 
+ * 			  replaces the pencil icon, and dragging on the screen now erases (draws white lines)
+ * 			- in the case where we were previously erasing, the toggled button is toggled off, the pencil icon replaces 
+ * 			  the eraser icon, and dragging on the screen now draws according to the specified color
+ * 		> choose color listener
+ * 			- in the case where the "Choose Color" button is previously toggled off, it is now toggled on and the color palette appears
+ * 			- in the case where the "Choose Color" button is previously toggled on, it is now toggled off and the color palette disappears
+ * 			- note that we also tested drawing, erasing, etc. *while* the button is toggled both on and off and ensured that it
+ * 			  does not affect the ability to interact with the baord, as is desired
+ * 		> save image listener:
+ * 			- checked that when "Save Image" button is pressed, an image corresponding to what is currently seen on the canvas
+ * 			  is saved locally to the user's computer under a file named "CanvasImage.BMP"
+ * 			- checked that pressing this multiple times will simply replace the old image and not cause error
+ * 		> input name listener:
+ * 			- checked that when someone presses the 'Enter' key while in the username box, that the person joins the board currently selected
+ * 			  and that same name is displayed in the users list
+ * 				- as subsets of this test, we also tested for cases when usernames were already taken, which prompts a corresponding 
+ * 				  display and does not allow the user to join the whiteboard session
+ * 		> input IP listener:
+ * 			- check that when someone presses the 'Enter' key  while in the IP Address input box, that the person attempts to join the server
+ * 			  corresponding to this IP address at the port number currently stated in the port box
+ * 			- note that different scenarios (correct/incorrect IPs) are tested in our end-to-end manual tests
+ * 		> input port listener:
+ * 			- check that when someone presses the 'Enter' key while in the Port input box, that the person attempts to join the server
+ * 			  corresponding to the input box's port number on the server currently stated in the IP box
+ * 			- note that different scenarios (correct/incorrect ports) are tested in our end-to-end manual tests
+ * 		> board # listener:
+ * 			- check that board menu displays the message "Board #", where # corresponds to the board # button selected from the
+ * 			  drop-down menu
+ * 		> connect listener:
+ * 			- checked that when someone clicks "Connect", that the person attempts to join the server designated by the provided
+ * 			  IP address and port number
+ * 			- note that different scenarios (correct/incorrect IP-port combinations) are tested in our end-to-end manual tests
+ * 		> join board listener:
+ * 			- same as 'input name listener' tests, except instead used for the event that a person pressed the "Join Board" button instead
+ * 			  of pressing the 'Enter' key in the input name box
+ * 			- see 'switching of board' tests below to see the tests of join board for the cases when the user is already logged in
+ * 		> loadConnectedToServerImage()
+ * 			- ensured the 'Connected to Server' image is displayed when a client succesfully connects to a server
+ * 		> loadUsernameTakenImage()
+ * 			- ensured the 'Username Taken' image is displayed when a client attempts to join a board using a username
+ * 			  that is currently being used by another client
+ * 		> mouseDragged event:
+ * 			- visually observed that when a mouse dragged across the canvas, if already connected to a server, a line was drawn
+ * 			  on the course of the drag, of the specified width (corresponding to the slider), of the specified color
+ * 			- same test, but for the case when erase is toggled on (observed that line was white)
+ * 		> before joining a specific whiteboard, tested the case when a user tried to draw to the board, and observed that
+ * 		  no error was thrown and no lines were in fact sent to the server or drawn locally
+ * 		> tested switching of whiteboards:
+ * 			- removed username of client from list of users on previous whiteboard's GUI
+ * 			- added username of client to list of users on new whiteboard's GUI
+ * 			- changed canvas to display the correct new whiteboard
+ * 				- this was itself tested for cases when the whiteboard being switched to was both (a) populated with an image,
+ * 				  (b) not populated with an image, and (c) currently being drawn on, and the GUI was up-to-date in all cases
+ * 			- also tested case when attempting to switch to same whiteboard and observed that no changes were made and no errors were thrown
+ * 			
+ * 
  */
 public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 	

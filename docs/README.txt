@@ -47,5 +47,33 @@ Manual Tests:
 		- the client's GUI now displays the user's chosen whiteboard
  - Once the client was connected to a whiteboard successfully
   	- their name showed up in the usersBar at the right side of the GUI
+  	- the image on the whiteboard's canvas was consistent with the whiteboard for other users
+  		- first tested that when a user is the first to connect to a whiteboard, it is completely white
+  		- next tested that when a user already exists on this whiteboard but has not drawn yet, it is still completely white
+  		- next tested when an existing user has drawn on the whiteboard, the new user should see the drawing upon connecting
+  		- the same test as above was then repeated for the case when the existing user switching boards or disconnects before
+  		  the new user joined, in which case the new user should still see the drawing
+  		- **key test** when the user is connecting and the canvas is being populated, user tries to draw a line
+  			- to test this, we continuously drew on a board for several minutes to ensure it had a large history list;
+  			  we then connected a new client and, while the board was being updated, had this client try to draw on the board;
+  			  we observed that the board continued to draw and the new line was in fact drawn at the very end, which is what
+  			  is expected
+  		- **key test** when the user is connecting and the canvas is being populated, other users continue to draw
+  			- to test this, we ensured an decent amount of lines had already been drawn on a specific board and then 
+  			  had a new user connect; while the new user was connecting, we had other users continue to draw and observed
+  			  that the new user still received the full image (both the history of the board and the new changes being made)
+  		- we also tested combinations of the above tests, such as having both the new user and existing users drawing on a
+  		  whiteboard while the new user is connecting, and found the images on all screens to be complete and consistent
   	- in the case of connected to an already populated whiteboad, the other users' usernames were also displayed
-  	- when the client draws a line, WhiteboardModel gets a request to send a "line ... " message to the server
+  		- also tested to ensure that they were displayed in the right colors, and that these colors were consistent
+  	- when the client draws a line:
+  		- WhiteboardModel gets a request to send a "line ... " message to the server
+  		- WhiteboardServer receives a "line ... " message and stores it in the corresponding whiteboard's history list
+  		- all clients connected to that specific whiteboard receive the same "line ... " message
+  		- these clients (including the client that sent the message) draw the line on their respective GUIs
+  			- observed that all these lines were drawn in the same location, with the same width and color
+  			- also observed that all other local states stayed the same (i.e. did not change local client's color,
+  			  line width, or cursor location upon drawing of new line)
+  		
+  		
+  		
