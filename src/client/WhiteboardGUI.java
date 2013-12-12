@@ -141,6 +141,7 @@ import javax.swing.SwingUtilities;
  * -- mention writing while loading canvas goes to front, as ping to server
  * 
  */
+@SuppressWarnings("serial")
 public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 	
     // image where the user's drawing is stored
@@ -488,7 +489,6 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
          * When mouse button is pressed down, start drawing.
          */
         public void mousePressed(MouseEvent e) {
-            System.out.println(e.paramString());
         	lastX = e.getX();
             lastY = e.getY();
         }

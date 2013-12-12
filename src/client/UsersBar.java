@@ -17,6 +17,7 @@ import javax.swing.JPanel;
  * 
  * Synchronization must occur, however, with loadUsersBar and removeUser, as a possible race condition could be a user 
  */
+@SuppressWarnings("serial")
 public class UsersBar extends JPanel{
 	private final HashMap<String, JLabel> usersLabelMap =  new HashMap<String, JLabel>();
 	

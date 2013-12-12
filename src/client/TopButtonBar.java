@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -15,6 +14,7 @@ import javax.swing.JToggleButton;
  * This class is never exposed to any multi-threaded behaviour. Components within it are only ever accessed or modified by direct client actions
  * on the GUI. 
  */
+@SuppressWarnings("serial")
 public class TopButtonBar extends JPanel{
 	
 	public ImageIcon drawIcon;

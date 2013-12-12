@@ -6,28 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import client.WhiteboardFrontEnd;
+
 /*
- * TESTING
  * 
- * NOTES:
- * 
- * The testing was implemented so that it would be independent from any
- * other existing class and/or these other classes functionality. It only
- * depends on WhiteboardFrontEnd interface.
- * 
- * Almost all methods in WhiteboardModel rely on having a server to which we
- * will send messages. We therefore have implemented a runnable called
- * dummyServer which starts a server and adds any received messages to a
- * field that all threads can share: serverRecievedMessages. Since we only
- * have one server at a time we don't risk any concurrency with this shared
- * memory.
- * 
- * WhiteboardModel also needs a WhiteboardFrontEnd when instantiated. This
- * is why we wrote the WhiteboardFrontEnd interface, so that the model could
- * be attached to any class having the given methods specified in the
- * interface(not locking it to WhiteboardGUI). This also makes testing much
- * easier in the sense that we can automatically test whether the model is
- * calling the correct methods in the gui.
  * 
  */
 public class TestUtils {
@@ -36,12 +17,19 @@ public class TestUtils {
     public List<String> serverReceivedMessages = new ArrayList<String>();
     public ArrayList<ArrayList<String>> clientReceivedMessages = new ArrayList<ArrayList<String>>();
     public List<String> guiReceivedMessages = new ArrayList<String>();
-    
 
     /**
-     * Generates a server
+     * Generate a server on localhost at a given port. This "dummy" server
+     * allows any number of users to connect to it. When a user connects, a
+     * serverListener is run for that user in particular, and listens for any
+     * messages that the client would send to the server, and stores it in a
+     * serverReceivedMessages list that can be accessed publicly from a testing
+     * method.
      * 
+     * @param portNo
+     *            port where we want to generate server
      * @throws IOException
+     *             if input/output error
      */
     public void startServer(final int portNo) throws IOException {
         new Thread(new Runnable() {
@@ -50,15 +38,15 @@ public class TestUtils {
 
                 try {
                     serverSocket = new ServerSocket(portNo);
-                    
-                    while(true){
+
+                    while (true) {
                         clientSocket = serverSocket.accept();
-                        socketOut = new PrintWriter(clientSocket.getOutputStream(),
-                                true);
-                        
+                        socketOut = new PrintWriter(
+                                clientSocket.getOutputStream(), true);
+
                         new Thread(new serverListener()).start();
                     }
-                    
+
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -67,21 +55,42 @@ public class TestUtils {
         }).start();
     }
 
+    /**
+     * Sends a message to the client that most recently connected to the server
+     * 
+     * @param message
+     *            the message to send to the clients input stream.
+     */
     public void serverSendToClient(String message) {
         socketOut.println(message);
     }
-    
 
+    /**
+     * Generates a "dummy" client and returns a PrintWriter that can write to
+     * that dummy client's inputstream.
+     * 
+     * @param username
+     *            the name of the client
+     * @param whiteboard
+     *            the whiteboard we want to connect to
+     * @param portNo
+     *            the port we will try to connect to
+     * @return a PrintWriter that allows anybody to send messages to the client
+     * @throws UnknownHostException
+     *             if can't find host
+     * @throws IOException
+     *             if I/O error
+     */
     public PrintWriter spawnClient(final String username, String whiteboard,
             final int portNo) throws UnknownHostException, IOException {
         String host = "localhost";
         final int id = clientReceivedMessages.size();
-        
+
         // Connect to the socket
         final Socket socket = new Socket(host, portNo);
-        
+
         clientReceivedMessages.add(new ArrayList<String>());
-                
+
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         final BufferedReader in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
@@ -112,42 +121,42 @@ public class TestUtils {
                 }
             }
         }).start();
-        
+
         sleep();
         return new PrintWriter(socketOut, true);
     }
 
     /**
-     * dummyFrontEnd allows us to call the model's constructor without needing the class WhiteboardGUI.
+     * dummyFrontEnd allows us to call whiteboardModel's constructor without
+     * needing the class WhiteboardGUI.
      */
     public class dummyFrontEnd implements WhiteboardFrontEnd {
-        
+
         public void drawLineOnGUI(String strx1, String stry1, String strx2,
                 String stry2, String strwidth, String strr, String strg,
                 String strb, String user) {
-            guiReceivedMessages.add("line "+strx1 + " " + stry1 + " " + strx2 + " "
-                    + stry2 + " " + strwidth + " " + strr + " " + strg + " "
-                    + strb + " " + user);
+            guiReceivedMessages.add("line " + strx1 + " " + stry1 + " " + strx2
+                    + " " + stry2 + " " + strwidth + " " + strr + " " + strg
+                    + " " + strb + " " + user);
         }
 
         public void fillWithWhite() {
-            
         }
 
         public void addNewUser(String user) {
-            guiReceivedMessages.add("newUser "+user);
+            guiReceivedMessages.add("newUser " + user);
         }
 
         public void removeUser(String user) {
-            guiReceivedMessages.add("users "+user);
+            guiReceivedMessages.add("users " + user);
         }
 
         public void loadGuiUsers(List<String> usersList) {
             String string = "";
-            for(String user: usersList){
-                string += " "+user;
+            for (String user : usersList) {
+                string += " " + user;
             }
-            guiReceivedMessages.add("users"+string);
+            guiReceivedMessages.add("users" + string);
         }
 
         public void loadUsernameTakenImage() {
@@ -157,21 +166,27 @@ public class TestUtils {
         }
     }
 
+    /**
+     * Give the server Thread some time to process the message to prevent race
+     * conditions.
+     */
     public void sleep() {
         try {
-            // Give the server Thread some time to process the message
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Listens for server messages, and stores them in serverReceivedMessages
+     */
     private class serverListener implements Runnable {
         @Override
         public void run() {
             String inputLine;
             BufferedReader in = null;
-            
+
             try {
                 in = new BufferedReader(new InputStreamReader(
                         clientSocket.getInputStream()));

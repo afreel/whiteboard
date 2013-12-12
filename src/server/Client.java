@@ -2,7 +2,6 @@ package server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
 
 public class Client {
 	private final String username;
@@ -37,7 +36,6 @@ public class Client {
 	 * @param message message to be sent
 	 */
 	public void sendMessage(String message) {
-		System.out.println(message);
 		printWriter.println(message);
 	}
 	
