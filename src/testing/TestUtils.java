@@ -72,12 +72,10 @@ public class TestUtils {
     }
 
     public void serverSendToClient(String message) {
+        System.out.println("Sending "+message);
         socketOut.println(message);
     }
     
-    public PrintWriter generateSocketOut(){
-        return new PrintWriter(socketOut, true);
-    }
 
     public PrintWriter spawnClient(final String username, String whiteboard,
             final int portNo) throws UnknownHostException, IOException {
@@ -125,8 +123,9 @@ public class TestUtils {
                 }
             }
         }).start();
-
-        return generateSocketOut();
+        
+        sleep();
+        return new PrintWriter(socketOut, true);
     }
 
     /**
@@ -143,15 +142,23 @@ public class TestUtils {
         }
 
         public void fillWithWhite() {
+            
         }
 
         public void addNewUser(String user) {
+            guiReceivedMessages.add("newUser "+user);
         }
 
         public void removeUser(String user) {
+            guiReceivedMessages.add("users "+user);
         }
 
         public void loadGuiUsers(List<String> usersList) {
+            String string = "";
+            for(String user: usersList){
+                string += " "+user;
+            }
+            guiReceivedMessages.add("users"+string);
         }
 
         public void loadUsernameTakenImage() {
@@ -164,7 +171,7 @@ public class TestUtils {
     public void sleep() {
         try {
             // Give the server Thread some time to process the message
-            Thread.sleep(100);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

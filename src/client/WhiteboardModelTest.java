@@ -5,6 +5,7 @@ import java.util.List;
 import java.io.*;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import testing.TestUtils;
@@ -27,12 +28,12 @@ public class WhiteboardModelTest {
         int portNumber = 4444;
         TestUtils test = new TestUtils();
         List<String> clientSentMessages = new ArrayList<String>();
-        
+
         test.startServer(portNumber);
-        System.out.println("Server started");
-        
+
         // Generate a dummy front end we can associate with the model
-        WhiteboardModel modelToTest = new WhiteboardModel(test.new dummyFrontEnd());
+        WhiteboardModel modelToTest = new WhiteboardModel(
+                test.new dummyFrontEnd());
         modelToTest.connectToServer("localhost", portNumber);
 
         // Send a message to the server
@@ -42,18 +43,18 @@ public class WhiteboardModelTest {
         test.sleep();
         assertEquals(clientSentMessages, test.serverReceivedMessages);
     }
-    
+
     @Test
     public void clientCorretlySendsWhiteboardMessages() throws IOException {
         int portNumber = 4445;
         TestUtils test = new TestUtils();
         List<String> clientSentMessages = new ArrayList<String>();
-        
+
         test.startServer(portNumber);
-        System.out.println("Server started");
-        
+
         // Generate a dummy front end we can associate with the model
-        WhiteboardModel modelToTest = new WhiteboardModel(test.new dummyFrontEnd());
+        WhiteboardModel modelToTest = new WhiteboardModel(
+                test.new dummyFrontEnd());
         modelToTest.connectToServer("localhost", portNumber);
 
         // Send a message to the server
@@ -63,20 +64,20 @@ public class WhiteboardModelTest {
         test.sleep();
         assertEquals(clientSentMessages, test.serverReceivedMessages);
     }
-    
+
     @Test
     public void clientCorretlySendsDisconnectMessage() throws IOException {
         int portNumber = 4446;
         TestUtils test = new TestUtils();
         List<String> clientSentMessages = new ArrayList<String>();
-        
+
         test.startServer(portNumber);
-        System.out.println("Server started");
-        
+
         // Generate a dummy front end we can associate with the model
-        WhiteboardModel modelToTest = new WhiteboardModel(test.new dummyFrontEnd());
+        WhiteboardModel modelToTest = new WhiteboardModel(
+                test.new dummyFrontEnd());
         modelToTest.connectToServer("localhost", portNumber);
-        
+
         // Send a message to the server
         modelToTest.disconnectFromServer();
         clientSentMessages.add("disconnect");
@@ -84,30 +85,50 @@ public class WhiteboardModelTest {
         test.sleep();
         assertEquals(clientSentMessages, test.serverReceivedMessages);
     }
-    
+
     @Test
-    public void clientCorretlyReceivesDrawLineMessage() throws IOException {
+    public void clientCorretlyReceivesMessages() throws IOException {
         int portNumber = 4447;
-        TestUtils test = new TestUtils();
+        final TestUtils utils = new TestUtils();
         List<String> serverSentMessages = new ArrayList<String>();
-        
-        test.startServer(portNumber);
-       
+
+        utils.startServer(portNumber);
+
         // Generate a dummy front end we can associate with the model
-        WhiteboardModel modelToTest = new WhiteboardModel(test.new dummyFrontEnd());
+        WhiteboardModel modelToTest = new WhiteboardModel(
+                utils.new dummyFrontEnd());
         modelToTest.connectToServer("localhost", portNumber);
-        // We need to start a server listener thread that will handle messages sent in
-        // from the server.
-        modelToTest.connectToWhiteBoard("whiteboard", "username", false);
-        
-        // Send a message to the client
-        test.sleep(); // Make sure the server has been created by now
-        System.out.println("Slept for some time");
-        test.serverSendToClient("line 0 0 200 200 5 0 0 0 username");
+
+        /*
+         * We need first to send a "whiteboard" message to be able to send
+         * further messages to the client. However the client will have a while
+         * loop running waiting for the server to tell him whether the username
+         * is unique or not. So wee need to thread off and wait for a little,
+         * and then send a message to the client(this way letting him know that
+         * the username is unique) that will make the client exit the
+         * in.readline() while loop.
+         */
+        new Thread(new Runnable() {
+            public void run() {
+                // Wait for the initial testing thread to connectToWhiteBoard().
+                utils.sleep();
+                // Send a message to the client
+                utils.serverSendToClient("line 0 0 200 200 5 0 0 0 username");
+            }
+        }).start();
+        modelToTest.connectToWhiteBoard("whiteboard", "user", false);
+
+        utils.sleep(); // Make sure the serverlistener has been created by now
+
         serverSentMessages.add("line 0 0 200 200 5 0 0 0 username");
-        
-        test.sleep();
-        
-        assertEquals(serverSentMessages, test.guiReceivedMessages);
+        utils.sleep();
+        serverSentMessages.add("users user1 user2");
+        utils.serverSendToClient("users user1 user2");
+        utils.sleep();
+        serverSentMessages.add("newUser randomNewUser");
+        utils.serverSendToClient("newUser randomNewUser");
+        utils.sleep();
+
+        assertEquals(serverSentMessages, utils.guiReceivedMessages);
     }
 }

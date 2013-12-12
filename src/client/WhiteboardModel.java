@@ -2,7 +2,6 @@ package client;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +12,18 @@ import javax.swing.SwingUtilities;
  * responsible for connecting the client with the server and listening for
  * server messages, and execute the expected behavior from the given message.
  * 
- * TESTING:
- * disconnectFromServer() was tested manually by:
- *  > connecting to an instance of WhiteboardServer from another computer
- *  > closing client window and ensuring that the correct message was sent by using a print statement
- *  > ensuring that client was removed from usersbar of those connected
- *  > ensuring that a new user could use that disconnected user's username
+ * TESTING: disconnectFromServer() was tested manually by: > connecting to an
+ * instance of WhiteboardServer from another computer > closing client window
+ * and ensuring that the correct message was sent by using a print statement >
+ * ensuring that client was removed from usersbar of those connected > ensuring
+ * that a new user could use that disconnected user's username
+ */
+
+/*
+ * Rep. Invariant: 
+ * - socket != null. 
+ * - usersList always contains the username of this client as long as
+ *   its connected to a whiteboard
  */
 public class WhiteboardModel {
     private Socket socket;
@@ -118,6 +123,8 @@ public class WhiteboardModel {
                 inputLine = inReader.readLine();
             }
             ;
+            System.out.println(inReader);
+
             if (inputLine.equals("usernameTaken")) {
                 gui.loadUsernameTakenImage();
                 return false;
