@@ -1,8 +1,11 @@
 package server;
 
 import static org.junit.Assert.*;
+
 import java.io.IOException;
+
 import testing.TestUtils;
+
 import org.junit.Test;
 
 /*
@@ -16,8 +19,10 @@ import org.junit.Test;
  * > Test that we can send new user messages to the client, and the client will receive it.
  * > Test that we can send user messages to the client, and that the client will successfully receive it.
  */
+@nodidit
 public class ClientTest {
-    @Test
+	
+	@Test
     public void clientGetUsernameTest() {
         try {
             TestUtils utils = new TestUtils();
