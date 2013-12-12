@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import client.WhiteboardGUI;
+
 /**
  * 
  * Main server class. An instance of this class will listen on a specific port
@@ -20,8 +22,10 @@ import java.util.List;
  */
 
 /*
- * Rep invariant: - whiteboardMap != null - whiteboardMap.size == 5 - usernames
- * != null
+ * Rep invariant: 
+ * - whiteboardMap != null 
+ * - whiteboardMap.size == 5 
+ * - usernames != null
  */
 
 /*----------------------------------------------------------Thread-safety Argument-------------------------------------------------------//
@@ -253,6 +257,7 @@ public class WhiteboardServer {
             }
         });
         thread.start();
+        WhiteboardGUI.main(new String[] {});
     }
 
 }

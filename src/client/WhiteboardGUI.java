@@ -110,7 +110,8 @@ import javax.swing.SwingUtilities;
  * 				- this was itself tested for cases when the whiteboard being switched to was both (a) populated with an image,
  * 				  (b) not populated with an image, and (c) currently being drawn on, and the GUI was up-to-date in all cases
  * 			- also tested case when attempting to switch to same whiteboard and observed that no changes were made and no errors were thrown
- * 			
+ * 		
+ * 		Manual testing of WhiteboardGUI described more in the context of other classes is described in docs/Manual Testibng.txt
  * 
  */
 

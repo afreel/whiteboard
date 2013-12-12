@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 /*----------------------------------------------------------Thread-safety Argument--------------------------------------------------------//
  * Three methods change the JLabel stores on this JPanel: loadUsersBar, addNewUser, and removeUser. loadUsersBar and addNewUser will not conflict,
  * as they both only add to this. This means that if a new user is added while all previous users are being loaded, that user will still be 

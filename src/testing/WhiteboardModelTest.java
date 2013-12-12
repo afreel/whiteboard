@@ -15,7 +15,8 @@ import client.WhiteboardModel;
  * @category no_didit
  */
 public class WhiteboardModelTest {
-    /*
+  
+	/*
      * TESTING STRATEGY:
      * 
      * We will test the client side from two ends:
