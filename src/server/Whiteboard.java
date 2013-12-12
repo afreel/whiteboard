@@ -14,25 +14,25 @@ import java.util.List;
  *  to fully test the Whiteboard class, we used manual tests
  */
 
-/*
- * Rep invariant: 
+/* Rep invariant: 
  *  - history != null
- *  - history.length < Integer.MAX_VALUE. In a reasonable use of this Whiteboard class, this size will not be reached as only one item is 
+ *  - history.size() < Integer.MAX_VALUE. In a reasonable use of this Whiteboard class, this size will not be reached as only one item is 
  *    added to history every time a user draws a line.
  *  - clients != null
  */
 
 /* ---------------------------------------------------Thread safety argument--------------------------------------------------------------/
- * - methods which mutate clients (addClient; removeClient) or interact with the clients in clients (sendMessageToAll) must acquire a lock
- *   on clients. Additionally, usersMessage is only called within addClient, which must acquire a lock on clients. 
- *   This monitor pattern prevents any possible race conditions on our clients list. 
+ * Methods which mutate clients (addClient; removeClient) or interact with the clients in clients (sendMessageToAll) must acquire a lock
+ * on clients. Additionally, usersMessage is only called within addClient, which must acquire a lock on clients. 
+ * This monitor pattern prevents any possible race conditions on our clients list. 
  * 
- * - the only methods accessing history are the mutator addLine and the observer loadWhiteboard. Both of these must acquire a lock on 
- *   history, thus preventing any possible race conditions.
+ * The only methods accessing history are the mutator addLine and the observer loadWhiteboard. Both of these must acquire a lock on 
+ * history, thus preventing any possible race conditions.
  *   
- * - Whiteboard's fields are private, final, and accessed only by methods within this class. Thus, according to the above assertions, 
- *   Whiteboard is threadsafe.
+ * Whiteboard's fields are private, final, and accessed only by methods within this class. Thus, according to the above assertions, 
+ * Whiteboard is threadsafe.
  */
+
 public class Whiteboard {
 	
 	private final List<Client> clients; //list of clients currently using this whiteboard
@@ -129,6 +129,15 @@ public class Whiteboard {
     			client.sendMessage(message);
     		}
     	}
+    }
+    
+    /**
+     * Ensure our representation invariant is maintained
+     */
+    public void checkRep() {
+    	assert(history != null);
+    	assert(history.size() < Integer.MAX_VALUE -1);
+    	assert(clients !=  null);
     }
     
     //METHODS BELOW ARE ONLY USED FOR TESTING

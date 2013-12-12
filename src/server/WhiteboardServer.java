@@ -28,6 +28,19 @@ import client.WhiteboardGUI;
  *  - whiteboardMap.size == 5
  *  - usernames != null
  */
+
+/*----------------------------------------------------------Thread-safety Argument-------------------------------------------------------//
+ * A new thread is spun for every client that connects to the server, and those threads independently handle all messages sent from that 
+ * client via the ClientHandler class. 
+ * 
+ * On receipt of a message, ClientHandler calls handleMessage, which acquires a lock on its whiteboardID field, which indicates which
+ * whiteboard that client is connected to. The only mutator method in ClientHandler (changeWhiteboardID) must also acquire a lock on
+ * whiteboardID, so by use of the Monitor Pattern we have avoided any race conditions on whiteboardID. Aside from that, handleMessage
+ * only accesses whiteboardMap (as an observer) and calls methods on Whiteboard. As whiteboardMap is only ever accessed by observer calls,
+ * multi-threaded access to it does not threaten its intended functionality and is therefore threadsafe. As Whiteboard is threadsafe,
+ * actions here from ClientHandler (handleMessage) thus preserve the thread-safety of our datatype as a whole. 
+ * 
+ */
 public class WhiteboardServer {
 
 	private final HashMap<String, Whiteboard> whiteboardMap;
@@ -59,7 +72,7 @@ public class WhiteboardServer {
 				public void run() {
 					
 					try {
-						boolean connectedToWhiteboard = false;
+						boolean connectedToWhiteboard = false; // client has not yet successfully connected to a whiteboard
 						BufferedReader clientIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						PrintWriter clientWriter = new PrintWriter(socket.getOutputStream(), true);
 						while (!connectedToWhiteboard) {
@@ -80,7 +93,7 @@ public class WhiteboardServer {
 									
 									Thread handleClient = new Thread(new ClientHandler(socket, chosenWhiteboard, newClient));
 									handleClient.start();
-									connectedToWhiteboard = true;
+									connectedToWhiteboard = true; // client has now connected to a whiteboard
 								}
 								else {
 									System.out.println("username already taken");
@@ -146,33 +159,46 @@ public class WhiteboardServer {
 		 * @param message message sent from client.
 		 */
 		private void handleMessageFromClient(String message) {
-			String[] messageAsArray = message.split(" ");
-			switch(messageAsArray[0]) {
-			case "line":  // Client has drawn a new line
-				whiteboardMap.get(whiteboardID).addLine(message + " " + this.client.getUsername()); break;
-			case "whiteboard": // Client has chosen to connect to another whiteboard
-				whiteboardMap.get(whiteboardID).removeClient(this.client);
-				changeWhiteboardID(messageAsArray[1]);
-				whiteboardMap.get(whiteboardID).addClient(this.client); break;
-			case "disconnect": // Client has closed their window, and is now disconnected from the server
-				whiteboardMap.get(whiteboardID).removeClient(this.client); 
-				Iterator<String> iter = usernames.iterator();
-				while(iter.hasNext()) {
-					if (iter.next().equals(this.client.getUsername())) {iter.remove(); break;}
+			synchronized(whiteboardID) {
+				String[] messageAsArray = message.split(" ");
+				switch(messageAsArray[0]) {
+				case "line":  // Client has drawn a new line
+					whiteboardMap.get(whiteboardID).addLine(message + " " + this.client.getUsername()); break;
+				case "whiteboard": // Client has chosen to connect to another whiteboard
+					whiteboardMap.get(whiteboardID).removeClient(this.client);
+					changeWhiteboardID(messageAsArray[1]);
+					whiteboardMap.get(whiteboardID).addClient(this.client); break;
+				case "disconnect": // Client has closed their window, and is now disconnected from the server
+					whiteboardMap.get(whiteboardID).removeClient(this.client); 
+					Iterator<String> iter = usernames.iterator();
+					while(iter.hasNext()) {
+						if (iter.next().equals(this.client.getUsername())) {iter.remove(); break;}
+					}
+					break;
 				}
-				break;
 			}
 			
 		}
+		
 		/**
 		 * mutator method to update our whiteboardID variable. For use when the client switches whiteboards.
 		 * @param newWhiteboard id of new whiteboard.
 		 */
 		private void changeWhiteboardID(String newWhiteboard) {
-			this.whiteboardID = newWhiteboard;
+			synchronized(whiteboardID) {
+				this.whiteboardID = newWhiteboard;
+			}
 		}
 	}
 	
+	/**
+	 * Ensure our representation invariant is being maintained
+	 */
+	public void checkRep() {
+		assert(whiteboardMap != null);
+		assert(whiteboardMap.size() == 5);
+		assert(usernames != null);
+	}
 	public static void main(String[] args) throws IOException {
 		final WhiteboardServer server = new WhiteboardServer();
 		Thread thread = new Thread(new Runnable() {
@@ -187,9 +213,9 @@ public class WhiteboardServer {
 		
 		thread.start();
 		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
-//		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
+		WhiteboardGUI.main(new String[]{});
 	}
 	
 }

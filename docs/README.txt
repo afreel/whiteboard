@@ -25,6 +25,7 @@ WhiteboardModel: disconnectFromServer() was tested manually by:
 					ensuring that a new user could use that disconnected user's username
 					
 Manual Tests:
+ o Where applicable, the below checks were performed using print statements
  - When the client connected to the server successfully:
  	- the correct WelcomeImage.bmp was loaded onto their canvas
  	- the GUI's BottumButtonBar was updated correctly, as specified in the design document
@@ -74,6 +75,14 @@ Manual Tests:
   			- observed that all these lines were drawn in the same location, with the same width and color
   			- also observed that all other local states stayed the same (i.e. did not change local client's color,
   			  line width, or cursor location upon drawing of new line)
+  	- when the client selects a different whiteboard and attempts to connect to it:
+  		- WhiteboardModel#connectToServer is called, with the correct boolean argument (usernameConfirmed == true)
+  		- The Whiteboard menu on BottomButtonBar now shows new Whiteboard connected to
+  		- Old canvas is covered with white, and new whiteboard canvas loads successfully
+  		- List of users is updated correctly
+  		- GUI looks identical to GUI of other users connected to same whiteboard
+  		- Client can draw on this whiteboard, and it updates other connected users' GUIs appropriately
+  		
   		
   		
   		

@@ -10,7 +10,13 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
+/*----------------------------------------------------------Thread-safety Argument--------------------------------------------------------//
+ * Three methods change the JLabel stores on this JPanel: loadUsersBar, addNewUser, and removeUser. loadUsersBar and addNewUser will not conflict,
+ * as they both only add to this. This means that if a new user is added while all previous users are being loaded, that user will still be 
+ * added and will not stop any other users from being added. 
+ * 
+ * Synchronization must occur, however, with loadUsersBar and removeUser, as a possible race condition could be a user 
+ */
 public class UsersBar extends JPanel{
 	private final HashMap<String, JLabel> usersLabelMap =  new HashMap<String, JLabel>();
 	
@@ -25,7 +31,7 @@ public class UsersBar extends JPanel{
 	 * Populate this with all the users currently connected to this client's whiteboard
 	 * @param users names of all users currently connected
 	 */
-	public void loadUsersBar(List<String> users) {
+	public synchronized void loadUsersBar(List<String> users) {
 		this.removeAll();
 		if (users.size() > 0) {
 			for (String user : users) {
@@ -60,7 +66,7 @@ public class UsersBar extends JPanel{
 	 * Removes a disconnected user from this
 	 * @param user name of disconnected user
 	 */
-	public void removeUser(String user) {
+	public synchronized void removeUser(String user) {
 		this.remove(usersLabelMap.get(user));
 		Iterator<Entry<String, JLabel>> iter = usersLabelMap.entrySet().iterator();
 		while (iter.hasNext()) {
