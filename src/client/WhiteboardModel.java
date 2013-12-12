@@ -25,7 +25,7 @@ import javax.swing.SwingUtilities;
  * - usersList always contains the username of this client as long as
  *   its connected to a whiteboard
  *   
-/* TESTING:
+ * TESTING:
  * disconnectFromServer() was tested manually by:
  *  > connecting to an instance of WhiteboardServer from another computer
  *  > closing client window and ensuring that the correct message was sent by using a print statement
