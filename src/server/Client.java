@@ -10,8 +10,8 @@ public class Client {
 	
 	/*
 	 * Rep invariant:
-	 * - username, printWriter != null
-	 * - 
+	 * - username != null
+	 * - printWriter != null
 	 */
 	
 	/**
@@ -39,6 +39,14 @@ public class Client {
 	public void sendMessage(String message) {
 		System.out.println(message);
 		printWriter.println(message);
+	}
+	
+	/**
+	 * Ensure that our representation invariant is maintained
+	 */
+	public void checkRep() {
+		assert(username != null);
+		assert(printWriter != null);
 	}
 	
 }

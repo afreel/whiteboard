@@ -12,6 +12,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+/*------------------------------------------------------Thread-safety Argument----------------------------------------------------------//
+ * Changes to BottomButtonBar are only triggered by events within WhiteboardGUI. The thread-safety of this class is therefore explained
+ * in WhiteboardGUI's thread-safety argument.
+ */
 public class BottomButtonBar extends JPanel {
     
     public JTextField inputName;

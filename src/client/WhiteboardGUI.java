@@ -31,9 +31,17 @@ import javax.swing.SwingUtilities;
 
 /**
  * Canvas represents a drawing surface that allows the user to draw
- * on it freehand, with the mouse.
- * 
- * TESTING:
+ * on it freehand, with the mouse
+ */ 
+
+/* Rep invariant:
+ *  - model != null
+ *  - usernameTakenImageLoc.equals("./././images/UsernameTakenImage.bmp")
+ *  - welcomeImageLoc.equals("./././images/WelcomeImage.bmp")
+ *  - connectedToServerImageLoc.equals("./././images/ConnectedToServerImage.bmp")
+ */
+
+/* TESTING:
  * GUI was tested with manual tests. As an overview, each method was tested individually by connecting a client to a server
  * and observing that every possible event triggered the correct result under differing circumstances. This strategy is shown
  * in much more detail below:
@@ -73,6 +81,34 @@ import javax.swing.SwingUtilities;
  * 			- check that board menu displays the message "Board #", where # corresponds to the board # button selected from the
  * 			  drop-down menu
  * 		>
+ */
+
+/*------------------------------------------------------Thread-safety Argument------------------------------------------------------------
+ * There are two types of changes that this GUI can undergo:
+ *  o Changes to the canvas which the user draws on 
+ *  o Changes to the BottomButtonBar at the bottom of the window, and loading of info message BMPs to canvas
+ *  
+ * These two changes never overlap in time, as changes to BottomButtonBar and loading of BMPs occur before the client connects to a Whiteboard, and thus before
+ * any changes to the canvas can be made. Thus it is viable to argue the thread safety of these two GUI changes independently.
+ * 
+ * Any time a client draws to the canvas, a "line ... " message is passed to the server, then back to all clients connected to that client's
+ * chosen whiteboard. Thus no drawing takes place on this canvas before the a message from the server is received. The thread-safety of 
+ * WhiteboardServer and Whiteboard ensures that messages sent from multiple clients are handled in a thread-safe manner server-side, and 
+ * thus that lines drawn on this GUI are drawn in a consistent manner across all clients' whiteboards (due to the thread-safe 'filter' of 
+ * our server-side classes).
+ * 
+ * Changes to BottomButtonBar occur in steps, with changes to the client's level of connectivity to the server (Not connected to the server; 
+ * connected; connected to a whiteboard). Each time, a change in the GUI only occurs once a message has been received from the server. This
+ * step-wise nature of the changes and independence from canvas changes outlined above results in thread-safety of this part of the GUI.
+ * 
+ * For an example of canvas thread-safety, if a user just connects to a whiteboard, it is sent that whiteboard's history. As the history can take 
+ * time to load completely, it can be illustrative to look at behaviour during this time. History is sent line-by-line, and locks on history while 
+ * this is taking place. Now any calls to add a new line message (say, when the client draws on their still-loading canvas), also acquire a lock on 
+ * the history list (see Whiteboard#addLine), so that this message is only sent back to server and drawn on their canvas once the history has finished 
+ * being sent. This results in the line the client drew being drawn over the loaded whiteboard canvas. This is exactly the behaviour we desired. 
+ * 
+ * -- mention writing while loading canvas goes to front, as ping to server
+ * 
  */
 public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
 	
@@ -453,6 +489,15 @@ public class WhiteboardGUI extends JPanel implements WhiteboardFrontEnd {
         public void mouseReleased(MouseEvent e) { }
         public void mouseEntered(MouseEvent e) { }
         public void mouseExited(MouseEvent e) { }
+    }
+    /**
+     * Ensure that our representation invariant is maintained
+     */
+    public void checkRep() {
+    	assert(model != null);
+    	assert(usernameTakenImageLoc.equals("./././images/UsernameTakenImage.bmp"));
+    	assert(welcomeImageLoc.equals("./././images/WelcomeImage.bmp"));
+    	assert(connectedToServerImageLoc.equals("./././images/ConnectedToServerImage.bmp"));
     }
     
     /*

@@ -13,12 +13,32 @@ import javax.swing.SwingUtilities;
  * responsible for connecting the client with the server and listening for
  * server messages, and execute the expected behavior from the given message.
  * 
- * TESTING:
+ */
+
+/* Rep invariant:
+ *  - usersList != null
+ */
+
+/* TESTING:
  * disconnectFromServer() was tested manually by:
  *  > connecting to an instance of WhiteboardServer from another computer
  *  > closing client window and ensuring that the correct message was sent by using a print statement
  *  > ensuring that client was removed from usersbar of those connected
  *  > ensuring that a new user could use that disconnected user's username
+ */
+
+/*-----------------------------------------------------------Thread-safety Argument-----------------------------------------------------//
+ * Concurrency is introduced in this class by the necessity to listen for both requests from WhiteboardGUI, and messages sent from the server
+ * This is implementing by spinning a new thread (of a ServerListener instance) on connection to a whiteboard which listens to messages from the server. Actions on 
+ * the WhiteboardGUI will call methods in this model, but those calls will be made on the GUI's main thread. This allows concurrent usage of 
+ * a WhiteboardModel instance.
+ * 
+ * Calls on methods in WhiteboardGUI from this class are all made using SwingUtilities.invokeLater, in handleMessage. This ensures that events which modify
+ * the GUI are placed on the AWT EventQueue, protecting our GUI rep from the inherently multi-threaded nature of Swing.
+ * 
+ * As mentioned above, relevant changes to WhiteboardGUI which call methods in this class and send messages out to the server are handled
+ * on a completely parallel thread to the one listening for server messages. Thus, given the thread-safeness of WhiteboardServer, actions
+ * through this model maintain the thread-safety of this datatype.
  */
 public class WhiteboardModel {
     private Socket socket;
@@ -259,6 +279,12 @@ public class WhiteboardModel {
                 }
             }
         }
+    }
+    /**
+     * Ensure our representation invariant is maintained
+     */
+    public void checkRep() {
+    	assert(usersList != null);
     }
 
 }

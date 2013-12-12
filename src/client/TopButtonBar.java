@@ -11,7 +11,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
-
+/*--------------------------------------------------------Thread-safety Argument-----------------------------------------------------------//
+ * This class is never exposed to any multi-threaded behaviour. Components within it are only ever accessed or modified by direct client actions
+ * on the GUI. 
+ */
 public class TopButtonBar extends JPanel{
 	
 	public ImageIcon drawIcon;
