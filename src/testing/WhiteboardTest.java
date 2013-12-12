@@ -1,9 +1,12 @@
-package server;
+package testing;
 
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import testing.TestUtils;
+
+import server.Client;
+import server.Whiteboard;
+
 import org.junit.Test;
 
 /**

@@ -1,4 +1,4 @@
-package client;
+package testing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import testing.TestUtils;
+import client.WhiteboardModel;
 
 /**
  * Tests our WhiteboardModel class
