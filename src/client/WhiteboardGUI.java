@@ -31,7 +31,6 @@ import javax.swing.SwingUtilities;
 
 /**
  * Canvas represents a drawing surface that allows the user to draw
-<<<<<<< HEAD
  * on it freehand, with the mouse
  */ 
 
@@ -42,19 +41,12 @@ import javax.swing.SwingUtilities;
  *  - connectedToServerImageLoc.equals("./././images/ConnectedToServerImage.bmp")
  */
 
-/* TESTING:
- * GUI was tested with manual tests. As an overview, each method was tested individually by connecting a client to a server
- * and observing that every possible event triggered the correct result under differing circumstances. This strategy is shown
- * in much more detail below:
-=======
- * on it freehand, with the mouse.
- * 
+/*
  * TESTING:
  * 
  * 	GUI was tested with manual tests. As an overview, each listener/method was tested individually by connecting a client to a server
  * 	and observing that every possible event triggered the expected visual result under differing circumstances. Tests
  * 	were also done for pre-connection actions.  This strategy is documented in much more detail below:
->>>>>>> ff3a4a614c1709a4e750a01e1c8bf56a87217231
  * 
  * 	Pre-Connection:
  * 		> tested running WhiteboardGUI without a server running, and ensuring that no matter what inputs are put into the 
