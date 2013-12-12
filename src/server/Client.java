@@ -13,7 +13,7 @@ public class Client {
 	 * - username != null
 	 * - printWriter != null
 	 */
-	
+
 	/**
 	 * Construct a Client object
 	 * @param username user's chosen username

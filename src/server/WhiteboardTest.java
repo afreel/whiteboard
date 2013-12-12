@@ -6,32 +6,38 @@ import java.io.IOException;
 import testing.TestUtils;
 import org.junit.Test;
 
-/*TESTING STRATEGY:
- * 
- * addClient(Client c): 
- * > ensure client is added to the clients list
- * > test case when clone of Client c already exists in clients list
- * > ensure client gets back a user message containing its own username 
- *   when it connects to a board
- * > ensure other clients get a new user message when a new client connects
- * 
- * removeClient(Client c):
- * > ensure client is removed from the clients list
- * > test case when Client c is not in the clients list
- * > ensure other clients get a remove user message to know that they
- *   shouldn't display this users name any longer
- *   
- * addLine(String message):
- * > check that line is added to history list
- * > test case when message is empty
- * > test case when message is abstract format
- * > check that line message gets echoed back to the client that sent it
- * > check that all other clients on the whiteboard also get the line message.
- * 
+/**
+ * Tests our Whiteboard class
+ *  @category no_didit
  */
 
 public class WhiteboardTest {
-    private String sampleLineMessage = "line 100 100 200 200 5 0 0 0";
+   
+	/*TESTING STRATEGY:
+	 * 
+	 * addClient(Client c): 
+	 * > ensure client is added to the clients list
+	 * > test case when clone of Client c already exists in clients list
+	 * > ensure client gets back a user message containing its own username 
+	 *   when it connects to a board
+	 * > ensure other clients get a new user message when a new client connects
+	 * 
+	 * removeClient(Client c):
+	 * > ensure client is removed from the clients list
+	 * > test case when Client c is not in the clients list
+	 * > ensure other clients get a remove user message to know that they
+	 *   shouldn't display this users name any longer
+	 *   
+	 * addLine(String message):
+	 * > check that line is added to history list
+	 * > test case when message is empty
+	 * > test case when message is abstract format
+	 * > check that line message gets echoed back to the client that sent it
+	 * > check that all other clients on the whiteboard also get the line message.
+	 * 
+	 */
+	
+	private String sampleLineMessage = "line 100 100 200 200 5 0 0 0";
 
     @Test
     public void addClientBasicTest() {
