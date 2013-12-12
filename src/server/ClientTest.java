@@ -8,6 +8,10 @@ import testing.TestUtils;
 
 import org.junit.Test;
 
+/**
+ * Tests our Client class
+ *  @category no_didit
+ */
 /*
  * TESTING STATEGY:
  * 
@@ -18,10 +22,11 @@ import org.junit.Test;
  * > Test that we can send line messages to the client, and the client will receive it.
  * > Test that we can send new user messages to the client, and the client will receive it.
  * > Test that we can send user messages to the client, and that the client will successfully receive it.
+ *  
  */
-@nodidit
+
 public class ClientTest {
-	
+
 	@Test
     public void clientGetUsernameTest() {
         try {
