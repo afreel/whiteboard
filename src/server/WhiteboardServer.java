@@ -207,12 +207,7 @@ public class WhiteboardServer {
 				}
 			}
 		});
-		
 		thread.start();
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
-		WhiteboardGUI.main(new String[]{});
 	}
 	
 }
